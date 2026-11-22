@@ -141,11 +141,11 @@ export function drawFace(g: G, r: number) {
   g.stroke();
 
   // Mouth: two large fish whose heads meet at the lips, bodies reaching out past the face.
-  for (const s of [-1, 1]) {
+  for (const m of mouthFish(r)) {
     g.save();
-    g.translate(s * r * 0.62, r * 0.83);
-    g.rotate(s > 0 ? Math.PI + 0.62 : -0.62);
-    drawFish(g, r * 1.15, r * 0.2, r);
+    g.translate(m.x, m.y);
+    g.rotate(m.rot);
+    drawFish(g, m.len, m.girth, r);
     g.restore();
   }
   const lips = new Path2D();
@@ -162,6 +162,14 @@ export function drawFace(g: G, r: number) {
     drawFish(g, r * 0.55, r * 0.1, r * 0.55);
     g.restore();
   }
+}
+
+/**
+ * The fish the face holds at its mouth, in the face's own frame (radius r, head
+ * toward −y). Shared by drawFace and by scene 5, where a fish of light leaves each one.
+ */
+export function mouthFish(r: number): Array<{ x: number; y: number; rot: number; len: number; girth: number }> {
+  return [-1, 1].map((s) => ({ x: s * r * 0.62, y: r * 0.83, rot: s > 0 ? Math.PI + 0.62 : -0.62, len: r * 1.15, girth: r * 0.2 }));
 }
 
 /** Centres used by scenes: where face groups and big fish sit on a disk of radius R. */

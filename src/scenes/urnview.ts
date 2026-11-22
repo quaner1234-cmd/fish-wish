@@ -3,7 +3,7 @@
 // user has actually seen (R3.2).
 
 import { canvas, holeOffset, urnGeometry } from "../art/pottery";
-import { motifLayout } from "../art/face";
+import { motifLayout, mouthFish } from "../art/face";
 import { circleMask } from "../core/coverage";
 import type { Env } from "./types";
 
@@ -58,6 +58,29 @@ export class UrnView {
     const { cx, cy, R } = urnGeometry(SIZE);
     const o = holeOffset();
     return { x: cx + o.x * R, y: cy + o.y * R };
+  }
+
+  /** Disk centre and radius in view units. */
+  disk() {
+    const { cx, cy, R } = urnGeometry(SIZE);
+    return { cx, cy, R };
+  }
+
+  /**
+   * The painted fish each face holds at its mouth, in view units: centre, heading
+   * (radians, head along +x), length and girth. Same numbers the painting uses.
+   */
+  heldFish() {
+    const { cx, cy, R } = urnGeometry(SIZE);
+    const out: Array<{ x: number; y: number; heading: number; len: number; girth: number }> = [];
+    for (const f of motifLayout(R).faces) {
+      const c = Math.cos(f.rot);
+      const s = Math.sin(f.rot);
+      for (const m of mouthFish(f.r)) {
+        out.push({ x: cx + f.x + m.x * c - m.y * s, y: cy + f.y + m.x * s + m.y * c, heading: f.rot + m.rot, len: m.len, girth: m.girth });
+      }
+    }
+    return out;
   }
   toScreen(env: Env, x: number, y: number) {
     const { k, ox, oy } = this.layout(env);

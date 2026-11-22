@@ -23,7 +23,7 @@ No backend, no account, no tracking. Works with mouse, touch or keyboard (arrow 
 ## How it is built
 
 - Vite + TypeScript, no UI framework. Canvas 2D for the scenes, an optional WebGL layer for dust and glow, DOM for all text.
-- Every surface is procedural and seeded; the face and fish are drawn in code from written descriptions, not traced from photographs. No image is AI-generated. Act 4 (the house at dawn) is animated in code: firelight, smoke carried over the jar, grass in the wind, sunrise, and the mother, who feeds the fire and then goes out to kneel by the jar.
+- Every surface is procedural and seeded; the face and fish are drawn in code from written descriptions, not traced from photographs. No image is AI-generated. Act 4 (the house at dawn) is animated in code: firelight, smoke carried over the jar, grass in the wind, sunrise, and the mother, who feeds the fire and then goes out to kneel by the jar. At the very end, the small fish the face holds fill with light, and a fish of light leaves each one and swims slowly round the basin; the painted fish stay where they are.
 - All sound is synthesized with Web Audio: the drones, the brush in the earth, small bells, and a faint breath under each of the face's lines. There are no recordings; the face speaks in text.
 - Lines are queued by `src/core/narrator.ts`: one at a time, each lasting a reading time estimated from its length. Pause holds the queue; skip drops what is left of the act.
 - `src/content/strings.json` holds all text: `story` (the face's lines, fiction) and `real` (history). Each `real` line cites fact IDs from `context/research-urn-burial.md`; `scripts/check-facts.mjs` fails the build on uncited, disputed-but-unlabelled or off-screen claims, and on forbidden wording anywhere.
@@ -31,7 +31,7 @@ No backend, no account, no tracking. Works with mouse, touch or keyboard (arrow 
 ## How Kiro was used
 
 - **Steering**: `.kiro/steering/` (product, tech, structure, contest rules, collaboration rules) and `AGENTS.md`.
-- **Spec-driven development**: `.kiro/specs/urn-experience/` — `requirements.md` (12 requirements, 55 acceptance criteria) → `design.md` → `tasks.md`.
+- **Spec-driven development**: `.kiro/specs/urn-experience/` — `requirements.md` (12 requirements, 56 acceptance criteria) → `design.md` → `tasks.md`.
 - **Hooks**: `.kiro/hooks/fact-check-on-save.json` runs the fact check whenever story text or the fact table is saved.
 - **Property-based tests** for the scene machine, dig coverage, lamp motion and the line queue (lines never overlap or reorder). A unit test keeps the hole in the lid in the same place seen from above and from inside.
 
@@ -52,7 +52,7 @@ MIT, see `LICENSE`.
 | 文件 | 内容 |
 | --- | --- |
 | `AGENTS.md` | Kiro 必读入口：约束、协作约定、导航、关键日期 |
-| `decisions/DECISIONS.md` | 决策记录（D-001 ~ D-013） |
+| `decisions/DECISIONS.md` | 决策记录（D-001 ~ D-014） |
 | `context/research-urn-burial.md` | 史实核对表 F1–F14，上屏文字的依据 |
 | `context/rules-verified.md` / `open-questions.md` | 官方规则（已核实 / 待核实）与待办 |
 | `ideas/IDEAS.md` | 创意记录 |

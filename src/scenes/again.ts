@@ -1,8 +1,28 @@
 // Scene 5: the same face, in warm light. Nothing about the picture changes (R6.1).
 // Only the light moves: when the face speaks of its closed eyes, the light rests on them.
+// At the last line (D-014) the fish the face holds fill with light, and a fish of light
+// leaves each one and swims slowly round the basin. The painted fish stay where they are.
 
+import { swimmerPath } from "../art/swim";
 import { Cues, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
 import type { UrnView } from "./urnview";
+
+const smooth = (t: number) => {
+  const u = Math.min(1, Math.max(0, t));
+  return u * u * (3 - 2 * u);
+};
+/** Seconds the light stays inside the painted fish before it swims off. */
+const DETACH = 1.4;
+
+interface Swimmer {
+  x: number;
+  y: number;
+  heading: number;
+  len: number;
+  girth: number;
+  speed: number;
+  phase: number;
+}
 
 export class AgainScene implements Scene {
   readonly exitFade = "none";
@@ -12,6 +32,9 @@ export class AgainScene implements Scene {
   private eyesTarget = 0;
   private queued = false;
   private finish = false;
+  /** Seconds since the fish woke; −1 before that. */
+  private swim = -1;
+  private fish: Swimmer[] = [];
 
   constructor(private view: UrnView) {}
 
@@ -22,6 +45,8 @@ export class AgainScene implements Scene {
     this.eyesTarget = 0;
     this.queued = false;
     this.finish = false;
+    this.swim = -1;
+    this.fish = [];
     this.view.zoom = 1;
     this.view.focus = 0;
     env.lamp.radius = Math.min(env.w, env.h) * 0.2;
@@ -30,18 +55,79 @@ export class AgainScene implements Scene {
       env.voice.say("lookAgain", { gap: 0 });
       env.voice.say("eyesClosed", { gap: 2.2, onStart: () => (this.eyesTarget = 1) });
       env.voice.say("promise", { gap: 2, onStart: () => (this.eyesTarget = 0) });
-      env.voice.say("stillDoes", { gap: 2.2, onStart: () => env.audio.bell(2, 0.04) });
+      env.voice.say("stillDoes", {
+        gap: 2.2,
+        onStart: () => {
+          env.audio.bell(2, 0.04);
+          this.cues.after(0.8, () => this.wake(env));
+        },
+      });
       this.queued = true;
     });
   }
 
+  private wake(env: Env) {
+    this.swim = 0;
+    this.fish = this.view.heldFish().map((f, i) => ({ ...f, speed: 0, phase: i * 1.9 }));
+    env.audio.bell(4, 0.025);
+  }
+
   update(dt: number, env: Env): Signal {
     this.cues.update(dt);
-    if (this.queued && env.voice.idleFor > 3.5) this.finish = true;
+    // A little longer than the other scenes, so the fish can be seen swimming before the card.
+    if (this.queued && env.voice.idleFor > 5) this.finish = true;
     this.view.update(dt, env, false);
     this.warmth = Math.min(1, this.warmth + dt / 10);
     this.eyes += (this.eyesTarget - this.eyes) * Math.min(1, dt * 0.8);
+    if (this.swim >= 0) this.swimOn(dt, env);
     return this.finish ? "next" : "stay";
+  }
+
+  /**
+   * Each fish turns away from the mouth and follows a slow circle round the basin,
+   * the way the big painted fish already point (clockwise on screen).
+   */
+  private swimOn(dt: number, env: Env) {
+    this.swim += dt;
+    const t = this.swim - DETACH;
+    if (t <= 0) return;
+    const { cx, cy, R } = this.view.disk();
+    const vmax = R * 0.13 * (env.reduced ? 0.5 : 1);
+    this.fish.forEach((f, i) => {
+      f.speed = vmax * smooth(t / 2.5);
+      const a = Math.atan2(f.y - cy, f.x - cx);
+      const orbit = R * (0.74 + 0.03 * Math.sin(this.swim * 0.5 + i * 1.7));
+      const want = Math.atan2(cy + Math.sin(a + 0.55) * orbit - f.y, cx + Math.cos(a + 0.55) * orbit - f.x);
+      let d = want - f.heading;
+      d = Math.atan2(Math.sin(d), Math.cos(d));
+      const turn = 1.1 * dt * (0.3 + 0.7 * smooth(t / 1.5));
+      f.heading += Math.max(-turn, Math.min(turn, d));
+      f.x += Math.cos(f.heading) * f.speed * dt;
+      f.y += Math.sin(f.heading) * f.speed * dt;
+      f.phase += dt * (2 + 6 * (f.speed / vmax));
+    });
+  }
+
+  /** The fish of light, drawn over the lit scene. */
+  private drawFish(g: CanvasRenderingContext2D, env: Env) {
+    const { k } = this.view.layout(env);
+    const alpha = 0.36 * smooth(this.swim / 1.2);
+    const amp = 0.09 * smooth((this.swim - DETACH) / 2) * (env.reduced ? 0.3 : 1);
+    // Soft and see-through, so they read as light rather than as more paint.
+    g.shadowColor = `rgba(255, 176, 96, ${Math.min(1, alpha * 2)})`;
+    g.shadowBlur = 24 * k;
+    g.fillStyle = `rgba(255, 212, 150, ${alpha})`;
+    for (const f of this.fish) {
+      const p = this.view.toScreen(env, f.x, f.y);
+      g.save();
+      g.translate(p.x, p.y);
+      g.rotate(f.heading);
+      g.scale(k, k);
+      g.fill(swimmerPath(f.len, f.girth, f.phase, amp));
+      g.restore();
+    }
+    g.shadowBlur = 0;
+    g.shadowColor = "rgba(0, 0, 0, 0)";
   }
 
   render(g: CanvasRenderingContext2D, env: Env) {
@@ -71,6 +157,7 @@ export class AgainScene implements Scene {
           const e = this.view.toScreen(env, this.view.faceCenter.x, this.view.faceCenter.y + 6);
           glow(e.x, e.y, 95 * k, [[0, `rgba(255, 220, 170, ${0.32 * this.eyes})`], [1, "rgba(255, 220, 170, 0)"]]);
         }
+        if (this.swim >= 0) this.drawFish(g, env);
         g.globalCompositeOperation = "source-over";
       },
     };
