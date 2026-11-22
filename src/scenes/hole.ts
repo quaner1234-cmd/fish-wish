@@ -1,7 +1,7 @@
 // Scene 3: a small hole in the basin lets in light. Two readings of why (R4).
 
 import { Cues, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
-import type { UrnView } from "./urnview";
+import { SOUL, type UrnView } from "./urnview";
 
 export class HoleScene implements Scene {
   readonly exitFade = "pale";
@@ -26,7 +26,7 @@ export class HoleScene implements Scene {
     this.finish = false;
     this.view.zoom = 1;
     this.view.focus = 0;
-    env.lamp.radius = Math.min(env.w, env.h) * 0.12;
+    env.lamp.radius = Math.min(env.w, env.h) * SOUL.radius;
     env.audio.set({ tension: 0.25, drone: 0.7, shimmer: 0 }, 3);
     this.cues.add(2.2, () => env.text.hint.show(env.s.ui.holeHint));
   }
@@ -93,7 +93,8 @@ export class HoleScene implements Scene {
     return {
       ambient: 0.012 + z * z * 0.6,
       lamp: 1 - z,
-      warm: 0.75,
+      warm: SOUL.warm,
+      flicker: SOUL.flicker,
       under: (g) => this.view.drawResidue(g, env, 0.12 * (1 - z)),
       over: (g) => this.drawLight(g, env),
     };
@@ -125,7 +126,7 @@ export class HoleScene implements Scene {
 
   fx(env: Env): Fx {
     const hs = this.holeScreen(env);
-    return { dust: 0.45, glow: 0.4 * (1 - this.zooming), beam: { x: hs.x, y: hs.y, r: Math.min(env.w, env.h) * (0.12 + this.zooming), i: this.light } };
+    return { dust: 0.45, glow: SOUL.glow * (1 - this.zooming), beam: { x: hs.x, y: hs.y, r: Math.min(env.w, env.h) * (0.12 + this.zooming), i: this.light } };
   }
 
   hint(env: Env) {

@@ -22,7 +22,7 @@
 | **Q-08** | 宣传中的「$100,000 总奖池」官方口径 | 规则 §8 表格逐项金额与宣传数字并非同一呈现；第三方报道与赛事宣传称 $100,000 [1] | 以 https://kiroween.devpost.com/rules §8 表格为准逐项核对；不要把宣传数字当作规则条款 | OPEN |
 | **Q-09** | Alex 在 Submission Period 开始后、但用其他 Agent（Codex / WorkBuddy）做的作品，或已投过其他比赛的作品（如 `innie-vote`、`proof-of-human`），能否沿用、沿用多少 | 规则 New Projects Only 要求披露 "pre-existing code or work"；硬约束要求 "build ... using Kiro"，"Insufficient use of Kiro" 可取消资格；2026-11-13 快照中未找到关于"已投其他比赛"的条款 [1] | 查 FAQ / Discussions；有歧义则书面询问主办方。在得到答复前，按"在 Kiro 里新写，旧作只当参考并在提交中披露"处理 | OPEN |
 
-| **Q-10** | 小米 MiMo-V2.5-TTS 生成的配音，能否放进 MIT 公开仓库、公开网站和比赛演示视频（权属、商用、署名要求） | 需求 R8.3 要求声音"自制、程序合成或明确可商用"；规则要求第三方服务"获得授权并遵守其条款"（`rules-verified.md` Third Party Integrations）。2026-11-22 查了 MiMo 公开文档（TTS 使用指南、首次调用、FAQ），没有找到生成内容的权属或商用条款（D-009） | Alex 登录 MiMo 开放平台控制台，查看用户协议 / 服务条款中关于生成内容的条款；把结论和条款链接写回本表。若不允许：删除 `public/voice/`，故事自动退回字幕加轻气声 | OPEN |
+| **Q-10** | 小米 MiMo-V2.5-TTS 生成的配音，能否放进 MIT 公开仓库、公开网站和比赛演示视频（权属、商用、署名要求） | 需求 R8.3 要求声音"自制、程序合成或明确可商用"；规则要求第三方服务"获得授权并遵守其条款"（`rules-verified.md` Third Party Integrations）。2026-11-22 查了 MiMo 公开文档（TTS 使用指南、首次调用、FAQ），没有找到生成内容的权属或商用条款（D-009） | 2026-11-22 Alex 决定去掉配音（D-012），`public/voice/` 已删除，当前网站与仓库最新版不含生成音频。剩下的只有 git 历史 `aa4e71e` 里的旧 MP3；只有在需要从历史中清除时才要再查条款（清除需改写历史并强制推送，须 Alex 批准） | 不再阻塞 |
 
 > 补充：Q-03 是持续项，提交前必须复核一次。任何核实结果都要写回 `context/rules-verified.md` 并更新快照哈希。
 

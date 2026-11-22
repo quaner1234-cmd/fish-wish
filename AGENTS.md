@@ -5,7 +5,7 @@
 ## 这是什么
 
 - 一个**独立、干净的探索工作区**，用于后续与 Kiro 共同研究、开发 Kiroween 2026 参赛作品。
-- 当前状态：**故事版已上线**（2026-11-22，D-003 ~ D-010；含配音、第四幕动画、结尾卡片）：《Fish Wish》（暂定名），盆上那张脸对"你"说话的网页互动故事，界面只用英文；Vite + TypeScript + Canvas 2D。地址 https://fish-wish.pages.dev ，仓库 https://github.com/quaner1234-cmd/fish-wish 。进度看 `.kiro/specs/urn-experience/tasks.md`。
+- 当前状态：**故事版已上线**（2026-11-22，D-003 ~ D-013；第四幕动画、结尾卡片、光从小孔进入瓮里；无配音，不用 3D）：《Fish Wish》（暂定名），盆上那张脸对"你"说话的网页互动故事，界面只用英文；Vite + TypeScript + Canvas 2D。地址 https://fish-wish.pages.dev ，仓库 https://github.com/quaner1234-cmd/fish-wish 。进度看 `.kiro/specs/urn-experience/tasks.md`。
 - 常用命令：`npm run dev` / `npm test` / `npm run check`（事实检查）/ `npm run build`；发布见 `tasks.md` 第 16 项。
 - 参赛类别：**Costume Contest**（已确认，见 `context/rules-verified.md`）。
 - 目标：做出**真正可运行的 App**，并具备**精致、令人印象深刻的诡异风格界面**。

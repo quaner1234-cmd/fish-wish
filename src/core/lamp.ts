@@ -18,6 +18,8 @@ export class Lamp {
   shiver = 1;
   /** 0..1, how strongly the lamp lights the scene. */
   strength = 1;
+  /** 0..1, how much of the flame flicker shows. Set each frame from the scene's lighting. */
+  flicker = 1;
   private t = 0;
 
   place(x: number, y: number) {
@@ -38,6 +40,6 @@ export class Lamp {
 
   /** Current light radius including flicker and shiver. */
   get r(): number {
-    return this.radius * this.shiver * (1 + this.flick);
+    return this.radius * this.shiver * (1 + this.flick * this.flicker);
   }
 }

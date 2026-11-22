@@ -35,6 +35,8 @@ export interface Lighting {
   lamp: number;
   /** Warmth of the light, 0..1. */
   warm: number;
+  /** How much the light flickers like a flame, 0..1 (default 1). */
+  flicker?: number;
   /** Drawn under the lit scene (e.g. what the eye remembers). */
   under?: (g: CanvasRenderingContext2D) => void;
   /** Drawn over it (light sources that are not the lamp). */

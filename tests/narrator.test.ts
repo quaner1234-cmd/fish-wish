@@ -1,19 +1,13 @@
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
 import strings from "../src/content/strings.json";
-import voice from "../src/content/voice.json";
 import { GAP, Narrator, lineSeconds, type LineId, type VoiceOut } from "../src/core/narrator";
 
-function rig(playable = true) {
+function rig() {
   const log: string[] = [];
   const out: VoiceOut = {
     show: (text) => log.push(`show:${text}`),
-    play: (id) => {
-      log.push(`play:${id}`);
-      return playable;
-    },
-    fallback: () => log.push("fallback"),
-    stop: () => log.push("stop"),
+    breath: () => log.push("breath"),
   };
   const n = new Narrator(out, (id) => strings.story[id]);
   const run = (seconds: number, step = 0.05) => {
@@ -23,34 +17,34 @@ function rig(playable = true) {
 }
 
 const ids = Object.keys(strings.story) as LineId[];
+const len = (id: LineId) => lineSeconds(strings.story[id]);
 
-describe("voice files", () => {
-  it("every story line has a recording with a sane length", () => {
+describe("line timing", () => {
+  it("every story line gets a readable, bounded length", () => {
     for (const id of ids) {
-      const s = (voice.seconds as Record<string, number>)[id];
-      expect(s, id).toBeGreaterThan(0.8);
-      expect(s, id).toBeLessThan(15);
+      expect(len(id), id).toBeGreaterThan(1.5);
+      expect(len(id), id).toBeLessThan(10);
     }
   });
 
-  it("falls back to a reading-time estimate when a line has no recording", () => {
-    expect(lineSeconds("noSuchLine", "Five words in this line.")).toBeGreaterThan(2);
+  it("longer lines last longer", () => {
+    expect(len("digLong")).toBeGreaterThan(len("lookAgain"));
   });
 });
 
 describe("narrator", () => {
-  it("speaks queued lines in order, each after the previous one ends", () => {
+  it("says queued lines in order, each after the previous one ends", () => {
     const { n, log, run } = rig();
     n.say("lookAgain");
     n.say("eyesClosed");
     run(0.1);
-    expect(log).toEqual([`show:${strings.story.lookAgain}`, "play:lookAgain"]);
+    expect(log).toEqual([`show:${strings.story.lookAgain}`, "breath"]);
     expect(n.current).toBe("lookAgain");
-    // Not yet: the second line waits for the first recording plus the gap.
-    run(lineSeconds("lookAgain", "") + GAP - 0.2);
+    // Not yet: the second line waits for the first one plus the gap.
+    run(len("lookAgain") + GAP - 0.2);
     expect(log).toHaveLength(2);
     run(0.3);
-    expect(log.slice(2)).toEqual([`show:${strings.story.eyesClosed}`, "play:eyesClosed"]);
+    expect(log.slice(2)).toEqual([`show:${strings.story.eyesClosed}`, "breath"]);
   });
 
   it("holds while time does not move (pause)", () => {
@@ -67,12 +61,12 @@ describe("narrator", () => {
     n.say("thereYouAre");
     run(0.1);
     expect(n.idleFor).toBe(0);
-    run(lineSeconds("thereYouAre", "") + 1);
+    run(len("thereYouAre") + 1);
     expect(n.busy).toBe(false);
     expect(n.idleFor).toBeGreaterThan(0.8);
   });
 
-  it("clear drops the queue and stops the voice", () => {
+  it("clear drops the queue", () => {
     const { n, log, run } = rig();
     n.say("digLong");
     n.say("digCareful");
@@ -80,15 +74,7 @@ describe("narrator", () => {
     n.clear();
     expect(n.busy).toBe(false);
     run(30);
-    expect(log.filter((l) => l.startsWith("play:"))).toEqual(["play:digLong"]);
-    expect(log).toContain("stop");
-  });
-
-  it("marks a line some other way when its recording cannot play", () => {
-    const { n, log, run } = rig(false);
-    n.say("byTheDoor");
-    run(0.1);
-    expect(log).toContain("fallback");
+    expect(log.filter((l) => l.startsWith("show:"))).toEqual([`show:${strings.story.digLong}`]);
   });
 
   it("runs onStart when its line begins", () => {
@@ -98,7 +84,7 @@ describe("narrator", () => {
     n.say("motherSoul", { onStart: () => started++ });
     run(1);
     expect(started).toBe(0);
-    run(lineSeconds("fatherHole", "") + GAP);
+    run(len("fatherHole") + GAP);
     expect(started).toBe(1);
   });
 
@@ -106,21 +92,18 @@ describe("narrator", () => {
   it("never overlaps lines and never reorders them", () => {
     fc.assert(
       fc.property(fc.array(fc.constantFrom(...ids), { minLength: 1, maxLength: 8 }), fc.array(fc.double({ min: 0.001, max: 0.4, noNaN: true }), { minLength: 50, maxLength: 400 }), (queue, steps) => {
-        const starts: Array<{ id: string; t: number }> = [];
+        const starts: Array<{ text: string; t: number }> = [];
         let t = 0;
-        const n = new Narrator(
-          { show: () => {}, play: (id) => (starts.push({ id, t }), true), fallback: () => {}, stop: () => {} },
-          (id) => strings.story[id],
-        );
+        const n = new Narrator({ show: (text) => starts.push({ text, t }), breath: () => {} }, (id) => strings.story[id]);
         for (const id of queue) n.say(id);
         for (const dt of steps) {
           t += dt;
           n.update(dt);
         }
-        expect(starts.map((s) => s.id)).toEqual(queue.slice(0, starts.length));
+        expect(starts.map((s) => s.text)).toEqual(queue.slice(0, starts.length).map((id) => strings.story[id]));
         for (let i = 1; i < starts.length; i++) {
           const prev = starts[i - 1]!;
-          expect(starts[i]!.t - prev.t).toBeGreaterThanOrEqual(lineSeconds(prev.id, "") + GAP - 1e-6);
+          expect(starts[i]!.t - prev.t).toBeGreaterThanOrEqual(lineSeconds(prev.text) + GAP - 1e-6);
         }
       }),
     );

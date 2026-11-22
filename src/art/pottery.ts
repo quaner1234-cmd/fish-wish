@@ -25,10 +25,45 @@ export function urnGeometry(size: number) {
   return { cx: size / 2, cy: size / 2, R: size * 0.4, hole: { angle: -Math.PI / 3, dist: 0.74 } };
 }
 
-/** Hole position relative to disk centre, in units of R. */
+/** Hole position relative to disk centre, in units of R, as seen from inside the jar. */
 export function holeOffset(): { x: number; y: number } {
   const { hole } = urnGeometry(1);
   return { x: Math.cos(hole.angle) * hole.dist, y: Math.sin(hole.angle) * hole.dist };
+}
+
+/** Radius of the hole, in units of the basin's radius. */
+export const HOLE_R = 0.03;
+
+/**
+ * The same hole seen from above while digging, in fractions of the dig stage from
+ * its centre. Looking down instead of up mirrors left and right.
+ */
+export function digHole(): { x: number; y: number; r: number } {
+  const o = holeOffset();
+  return { x: -o.x * DIG.rim, y: o.y * DIG.rim, r: HOLE_R * DIG.rim };
+}
+
+/** The hole as a dark opening with a rough, paler broken edge. */
+function drawHole(g: CanvasRenderingContext2D, x: number, y: number, r: number, seed: number) {
+  const rand = mulberry32(seed);
+  g.save();
+  g.fillStyle = "rgba(214, 150, 104, 0.35)";
+  for (let i = 0; i < 9; i++) {
+    const a = rand() * Math.PI * 2;
+    const d = r * (1 + rand() * 0.35);
+    g.beginPath();
+    g.arc(x + Math.cos(a) * d * 0.5, y + Math.sin(a) * d * 0.5, r * (0.55 + rand() * 0.35), 0, Math.PI * 2);
+    g.fill();
+  }
+  const grad = g.createRadialGradient(x, y, 0, x, y, r * 1.05);
+  grad.addColorStop(0, "rgba(3, 2, 1, 1)");
+  grad.addColorStop(0.75, "rgba(5, 3, 2, 1)");
+  grad.addColorStop(1, "rgba(5, 3, 2, 0)");
+  g.fillStyle = grad;
+  g.beginPath();
+  g.arc(x, y, r * 1.05, 0, Math.PI * 2);
+  g.fill();
+  g.restore();
 }
 
 /**
@@ -80,6 +115,9 @@ export function renderUrnView(size = 1024): HTMLCanvasElement {
   }
   g.putImageData(img, 0, 0);
   g.drawImage(paintLayer(size), 0, 0);
+  // The hole (F8): the way in from the dig, and where the light comes through later.
+  const o = holeOffset();
+  drawHole(g, cx + o.x * R, cy + o.y * R, HOLE_R * R, 23);
   // A few faint scratches catch the light.
   g.save();
   g.beginPath();
@@ -213,6 +251,8 @@ export function renderDigObjects(size = 1024): HTMLCanvasElement {
     }
   }
   g.putImageData(img, 0, 0);
+  const h = digHole();
+  drawHole(g, size * (0.5 + h.x), size * (0.5 + h.y), h.r * size, 23);
   return c;
 }
 

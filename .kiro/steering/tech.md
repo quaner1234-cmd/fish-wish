@@ -4,7 +4,7 @@
 
 - Vite + TypeScript，不用 UI 框架；包管理用 npm。
 - 主渲染 Canvas 2D；特效用一层可降级的 WebGL canvas（无 WebGL 或 reduced-motion 时不画）。
-- 文字用 DOM；环境声用 Web Audio API 程序合成。那张脸的配音是 18 个 MP3（`public/voice/`），由小米 MiMo-V2.5-TTS 生成、ffmpeg 混音（D-009，流程见 design.md §5.1）。重新生成需要环境变量 `XIAOMI_API_KEY`（只读变量，不写入任何文件、不打印）和 ffmpeg。
+- 文字用 DOM；全部声音用 Web Audio API 程序合成，没有音频文件（D-012，撤销 D-009 的配音）。
 - 测试：Vitest + fast-check。
 - 托管：Cloudflare Pages，`wrangler pages deploy dist` 手动发布。
 - 细节见 `.kiro/specs/urn-experience/design.md`。改动技术栈前先记进 `decisions/DECISIONS.md` 并经 Alex 确认。
@@ -23,7 +23,6 @@
 
 - 实测细节（路径、代理、各工具版本）只记在 `context/dev-environment.md`，该文件只留本地，不进公开仓库。
 - 已实际跑通（2026-11-22）：Node 24 + npm 11 下 `npm test`、`npm run build`；`wrangler pages deploy` 发布到 Cloudflare Pages。
-- 配音脚本（`voice:gen` / `voice:encode` / `voice:check`）需要 `XIAOMI_API_KEY`；`voice:encode` 还需要 ffmpeg，用 `FFMPEG` 环境变量指定，或放在 `PATH` 上。
 - 网络环境可能让个别 HTTPS 抓取失败；遇到时看 `context/dev-environment.md`，不要改系统代理设置。
 
 ## 来源

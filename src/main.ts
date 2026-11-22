@@ -137,14 +137,11 @@ const input = new Input(stageEl, W, H);
 lamp.place(W / 2, H / 2);
 const text = new TextLayer();
 const audio = new AudioEngine();
-// The face's recorded lines (D-009): fetched in the background while the start screen is read.
-audio.preloadVoices(Object.fromEntries(Object.keys(s.story).map((id) => [id, `${import.meta.env.BASE_URL}voice/${id}.mp3`])));
+// The face speaks in text, over a faint breath (D-012).
 const voice = new Narrator(
   {
     show: (line, seconds) => text.narration.show(line, true, seconds),
-    play: (id) => audio.voice(id),
-    fallback: () => audio.breath(),
-    stop: () => audio.stopVoice(),
+    breath: () => audio.breath(),
   },
   (id) => s.story[id],
 );
@@ -286,7 +283,7 @@ const perf = new URLSearchParams(location.search).has("perf") ? { update: 0, ren
 if (perf) {
   const w = window as unknown as { __perf: typeof perf; __voice: () => object };
   w.__perf = perf;
-  w.__voice = () => ({ ...audio.voiceState(), line: voice.current, busy: voice.busy, scene: sceneOf(machine) });
+  w.__voice = () => ({ line: voice.current, busy: voice.busy, scene: sceneOf(machine) });
 }
 let last = performance.now();
 let clock = 0;
@@ -331,6 +328,7 @@ function frame(now: number) {
   scene.render(lg, env);
   const t2 = performance.now();
   const lit = scene.lighting(env);
+  lamp.flicker = lit.flicker ?? 1;
   compose(lit, clock);
   const t3 = performance.now();
   if (fx) {

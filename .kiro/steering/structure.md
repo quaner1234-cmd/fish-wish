@@ -9,17 +9,16 @@ kiroween-2026\                      # 公开仓库 fish-wish 的根目录
 ├── .gitignore                      # 明确不含 .kiro
 ├── index.html / vite.config.ts / tsconfig.json / package.json / LICENSE (MIT)
 ├── src\                            # 应用源码，布局见 design.md §2
-├── public\voice\                   # 那张脸的配音，每句一个 MP3（D-009）
-├── scripts\                        # 事实检查；配音生成 / 混音 / 机器核对（mimo.mjs、voice-*.mjs）
+├── scripts\                        # 事实检查（check-facts.mjs、fact-check-lib.mjs）
 ├── tests\                          # Vitest + fast-check
-├── _scratch\                       # 本地临时文件（浏览器脚本、截图、原始配音 WAV、第三方素材），已 gitignore
+├── _scratch\                       # 本地临时文件（浏览器脚本、截图、旧配音 WAV、第三方素材），已 gitignore
 ├── .kiro\
 │   ├── hooks\
 │   │   └── fact-check-on-save.json # 保存文案或事实表时运行事实检查
 │   ├── specs\
 │   │   └── urn-experience\
-│   │       ├── requirements.md     # 需求 v0.4
-│   │       ├── design.md           # 设计 v0.4
+│   │       ├── requirements.md     # 需求 v0.5
+│   │       ├── design.md           # 设计 v0.5
 │   │       └── tasks.md            # 任务与进度
 │   └── steering\
 │       ├── product.md              # 产品概览 / 目标 / 待定项

@@ -10,6 +10,13 @@ import type { Env } from "./types";
 const SIZE = 1024;
 const MEM = 128;
 
+/**
+ * The light inside the jar, in scenes 2 and 3 (D-013). It came in through the hole
+ * and it is "you": smaller than the digger's lamp, steadier, less of a flame.
+ * `radius` is a fraction of the shorter screen side.
+ */
+export const SOUL = { radius: 0.1, warm: 0.4, glow: 0.28, flicker: 0.25 };
+
 export class UrnView {
   readonly memory = canvas(MEM);
   private mg = this.memory.getContext("2d", { willReadFrequently: true })!;

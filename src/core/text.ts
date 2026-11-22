@@ -1,11 +1,11 @@
-// DOM text layer (R9.3): the face's voice, quiet hints, and plain captions.
-// The voice appears letter by letter; screen readers still get the whole line at once.
+// DOM text layer (R9.3): the face's lines, quiet hints, and plain captions.
+// The face's lines appear letter by letter; screen readers still get the whole line at once.
 
 class Line {
   private pending: number | undefined;
   constructor(private el: HTMLElement) {}
 
-  /** `seconds`: how long the spoken line lasts, so the letters keep pace with the voice. */
+  /** `seconds`: how long the line lasts, so the letters arrive over most of it. */
   show(text: string, voice = false, seconds = 0) {
     if (this.el.dataset.text === text && this.el.classList.contains("visible")) return;
     window.clearTimeout(this.pending);
@@ -36,7 +36,7 @@ class Line {
       this.el.textContent = "";
       const frag = document.createDocumentFragment();
       const chars = [...text];
-      // The letters arrive over most of the spoken line, never too slow to read.
+      // The letters arrive over most of the line, never too slow to read.
       const step = seconds > 0 ? Math.min(0.09, Math.max(0.03, ((seconds - 0.6) * 0.8) / chars.length)) : 0.045;
       chars.forEach((ch, i) => {
         const span = document.createElement("span");

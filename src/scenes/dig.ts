@@ -1,13 +1,19 @@
 // Scene 1: brush the earth away in the dark until the jar and its basin lid appear (R2).
 
 import { alphaChannel, circleMask, coverageRatio } from "../core/coverage";
-import { DIG, canvas } from "../art/pottery";
+import { follow } from "../core/lamp";
+import { DIG, canvas, digHole } from "../art/pottery";
 import { Cues, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
 
 const STAGE = 1024;
 const SAMPLE = 64;
 const DONE_AT = 0.7;
 const AUTO_AFTER = 90;
+/** Once the jar is found, the way in (D-013): rest the light on the hole, or wait. */
+const DWELL = 0.8;
+const SEEK_AUTO = 8;
+
+const smooth = (t: number) => t * t * (3 - 2 * t);
 
 interface Mote {
   x: number;
@@ -38,6 +44,13 @@ export class DigScene implements Scene {
   private seed = 1;
   private said = 0;
   private lastQueued = false;
+  private seeking = false;
+  private seekT = 0;
+  private dwell = 0;
+  /** 0 = not started; then 0..1 while the light goes down into the hole. */
+  private descent = 0;
+  private lampBase = 0;
+  private lampPos = { x: 0, y: 0 };
 
   enter(env: Env) {
     this.sg.globalCompositeOperation = "source-over";
@@ -52,14 +65,38 @@ export class DigScene implements Scene {
     this.motes = [];
     this.said = 0;
     this.lastQueued = false;
+    this.seeking = false;
+    this.seekT = 0;
+    this.dwell = 0;
+    this.descent = 0;
     env.lamp.radius = Math.min(env.w, env.h) * 0.17;
     env.audio.set({ drone: 0.55, earth: 0.9, tension: 0, shimmer: 0, warm: 0, brush: 0 }, 2);
     this.cues.add(1.2, () => env.text.hint.show(env.s.ui.digHint));
   }
-  /** Screen → stage mapping. The square stage covers the whole screen. */
+  /**
+   * Screen → stage mapping. The square stage covers the whole screen. During the
+   * descent the view closes in on the hole and brings it to the centre.
+   */
   private stage(env: Env) {
-    const S = Math.max(env.w, env.h);
-    return { S, ox: (env.w - S) / 2, oy: (env.h - S) / 2, k: S / STAGE };
+    const S0 = Math.max(env.w, env.h);
+    const ox0 = (env.w - S0) / 2;
+    const oy0 = (env.h - S0) / 2;
+    if (this.descent <= 0) return { S: S0, ox: ox0, oy: oy0, k: S0 / STAGE };
+    const e = smooth(this.descent);
+    const S = S0 * Math.pow(env.reduced ? 2 : 7, e);
+    const f = Math.min(1, e * 1.5);
+    const h = digHole();
+    const hx = 0.5 + h.x;
+    const hy = 0.5 + h.y;
+    const tx = ox0 + hx * S0 + (env.w / 2 - (ox0 + hx * S0)) * f;
+    const ty = oy0 + hy * S0 + (env.h / 2 - (oy0 + hy * S0)) * f;
+    return { S, ox: tx - hx * S, oy: ty - hy * S, k: S / STAGE };
+  }
+
+  private holeScreen(env: Env) {
+    const { S, ox, oy } = this.stage(env);
+    const h = digHole();
+    return { x: ox + (0.5 + h.x) * S, y: oy + (0.5 + h.y) * S };
   }
 
   private stamp(x: number, y: number, r: number, strength = 0.55) {
@@ -156,11 +193,38 @@ export class DigScene implements Scene {
       m.vx *= 1 - dt * 1.5;
     }
     this.motes = this.motes.filter((m) => m.life > 0);
-    if (this.lastQueued && !this.finish && env.voice.idleFor > 1.6) {
+    if (this.lastQueued && !this.seeking && env.voice.idleFor > 1.6) {
       env.text.narration.hide();
-      this.finish = true;
+      this.seeking = true;
+    }
+    // The hole glimmers. The light that rests on it goes in; so does the light that waits.
+    if (this.seeking && this.descent === 0) {
+      this.seekT += dt;
+      const hs = this.holeScreen(env);
+      const over = Math.hypot(env.lamp.x - hs.x, env.lamp.y - hs.y) < Math.max(24, env.lamp.r * 0.35);
+      // Count only once the glimmer is there to be seen.
+      this.dwell = over && this.seekT > 1.2 ? this.dwell + dt : Math.max(0, this.dwell - dt * 0.5);
+      if (this.dwell >= DWELL || this.seekT >= SEEK_AUTO) this.startDescent(env);
+    }
+    if (this.descent > 0) {
+      this.descent = Math.min(1, this.descent + dt / (env.reduced ? 1.4 : 2.8));
+      // The light is drawn to the hole, narrows, and drains into it.
+      const hs = this.holeScreen(env);
+      this.lampPos.x = follow(this.lampPos.x, hs.x, dt, 5);
+      this.lampPos.y = follow(this.lampPos.y, hs.y, dt, 5);
+      env.lamp.place(this.lampPos.x, this.lampPos.y);
+      env.lamp.radius = this.lampBase * (1 - 0.72 * smooth(this.descent));
+      if (this.descent >= 1) this.finish = true;
     }
     return this.finish ? "next" : "stay";
+  }
+
+  private startDescent(env: Env) {
+    this.descent = 0.0001;
+    this.lampBase = env.lamp.radius;
+    this.lampPos = { x: env.lamp.x, y: env.lamp.y };
+    env.audio.set({ earth: 0.15, drone: 0.9, brush: 0 }, 2.5);
+    env.audio.bell(0, 0.035);
   }
 
   private onFound(env: Env) {
@@ -215,9 +279,33 @@ export class DigScene implements Scene {
     g.globalAlpha = 1;
   }
 
-  lighting(): Lighting {
+  lighting(env: Env): Lighting {
     // Once found, a little more of the jar becomes visible around the lamp.
-    return { ambient: 0.035 + 0.14 * this.clearing, lamp: 1, warm: 0.85 };
+    // Going down, the world falls dark and the light itself goes out into the hole.
+    const d = smooth(this.descent);
+    const out = smooth(Math.max(0, (this.descent - 0.65) / 0.35));
+    return {
+      ambient: (0.035 + 0.14 * this.clearing) * (1 - d),
+      lamp: 1 - out,
+      warm: 0.85,
+      over: this.seeking ? (g) => this.drawGlimmer(g, env) : undefined,
+    };
+  }
+
+  /** A slow, breathing point of light at the hole: the way in. */
+  private drawGlimmer(g: CanvasRenderingContext2D, env: Env) {
+    const hs = this.holeScreen(env);
+    const show = Math.min(1, this.seekT / 1.2) * (1 - smooth(Math.min(1, this.descent * 2.5)));
+    if (show <= 0) return;
+    const a = show * (0.3 + 0.2 * Math.sin(this.cues.t * 2.2 * (env.reduced ? 0.3 : 1)));
+    const r = 22;
+    const gr = g.createRadialGradient(hs.x, hs.y, 0, hs.x, hs.y, r);
+    gr.addColorStop(0, `rgba(255, 210, 150, ${a})`);
+    gr.addColorStop(1, "rgba(255, 210, 150, 0)");
+    g.globalCompositeOperation = "lighter";
+    g.fillStyle = gr;
+    g.fillRect(hs.x - r, hs.y - r, r * 2, r * 2);
+    g.globalCompositeOperation = "source-over";
   }
 
   fx(): Fx {
