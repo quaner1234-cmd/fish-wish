@@ -5,7 +5,10 @@
 - **作品名**：暂定 "Fish Wish"（D-007）。叙述者是盆上那张脸，它把用户当成瓮里的孩子；人物和台词是虚构，史实在结尾 "What is real" 页。
 - **方向**（D-003）：一个网页互动叙事体验。用户在黑暗中发掘出半坡人面鱼纹彩陶盆盖着的婴儿瓮棺，进入瓮内看到盆内壁的脸，再经由小孔和瓮旁的房子，明白这是父母的爱。不是有输赢的游戏。
 - **基调**：留下的是爱；恐怖是工具，不是目的。不出现遗体、骨骼、血腥或跳出式惊吓。
-- **spec**：`.kiro/specs/urn-experience/`（需求 v0.3，设计 v0.3，进度在 `tasks.md`）；史实依据：`context/research-urn-burial.md`。"What is real" 页和开头声明里的史实句必须能对应到其中一条 F#；脸的台词是虚构，不需要出处。
+- **spec**：`.kiro/specs/urn-experience/`（需求 v0.4，设计 v0.4，进度在 `tasks.md`）；史实依据：`context/research-urn-burial.md`。"What is real" 页和结尾卡片里的史实句必须能对应到其中一条 F#；脸的台词是虚构，不需要出处。
+- **开头与结尾**（D-008）：开始画面不放项目说明和内容提示；"inspired by… The people are imagined. The basin is real." 是结尾卡片。
+- **配音**（D-009）：脸的 18 句台词有配音（MiMo-V2.5-TTS，Chloe），声音的"戏服"随幕褪去；素材条款待核实（Q-10）。
+- **第四幕**（D-010）：程序绘制加动画，母亲添火后走出门跪到罐子旁。
 - **界面语言**：只用英文（D-004）。
 - **技术栈与托管**：已定（D-005），见 `tech.md`。
 - **许可证**：MIT（D-006）。地址：https://fish-wish.pages.dev ；仓库：https://github.com/quaner1234-cmd/fish-wish

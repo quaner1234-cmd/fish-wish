@@ -26,7 +26,6 @@
     <section id="start" class="screen" aria-labelledby="start-title">
       <h1 id="start-title"></h1>
       <p id="start-sub" class="sub"></p>
-      <p id="start-note" class="note"></p>
       <p id="start-sound" class="note"></p>
       <p id="start-controls" class="note"></p>
       <button id="btn-start" type="button" class="primary"></button>
@@ -37,9 +36,12 @@
       <button id="btn-resume" type="button" class="primary"></button>
     </section>
 
-    <section id="end" class="screen clear" hidden>
-      <button id="btn-again" type="button" class="primary"></button>
-      <button id="btn-sources" type="button"></button>
+    <section id="end" class="screen end" hidden>
+      <div id="end-card" class="end-card" aria-live="polite"></div>
+      <div class="end-actions">
+        <button id="btn-again" type="button" class="primary"></button>
+        <button id="btn-sources" type="button"></button>
+      </div>
     </section>
 
     <section id="sources" class="screen dim scroll" hidden aria-labelledby="sources-title" role="dialog" aria-modal="true">

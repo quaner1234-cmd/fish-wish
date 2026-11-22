@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "npm run check && tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "voice:gen": "node scripts/voice-gen.mjs",
+    "voice:encode": "node scripts/voice-encode.mjs",
+    "voice:check": "node scripts/voice-check.mjs"
   },
   "devDependencies": {
     "fast-check": "^4.10.3",

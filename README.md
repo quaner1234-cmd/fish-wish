@@ -18,12 +18,22 @@ npm run check      # fact check of all on-screen text
 npm run build      # check + type-check + production build to dist/
 ```
 
+The voice files in `public/voice/` are committed. To regenerate them you need a Xiaomi MiMo API key in `XIAOMI_API_KEY` and ffmpeg (`FFMPEG` or on `PATH`):
+
+```bash
+npm run voice:gen -- Chloe              # synthesize, machine-transcribe, keep clean takes (raw WAV in _scratch/)
+npm run voice:encode -- Chloe           # mix the "costume", encode MP3, write src/content/voice.json
+npm run voice:check -- public/voice     # transcribe and describe each file again
+```
+
 No backend, no account, no tracking. Works with mouse, touch or keyboard (arrow keys move the light, hold Space to brush, Enter to go on, P pause, S skip, M mute). Honors `prefers-reduced-motion`.
 
 ## How it is built
 
 - Vite + TypeScript, no UI framework. Canvas 2D for the scenes, an optional WebGL layer for dust and glow, DOM for all text.
-- Every surface is procedural and seeded; the face and fish are drawn in code from written descriptions, not traced from photographs. All sound is synthesized with Web Audio.
+- Every surface is procedural and seeded; the face and fish are drawn in code from written descriptions, not traced from photographs. No image is AI-generated. Act 4 (the house at dawn) is animated in code: firelight, smoke carried over the jar, grass in the wind, sunrise, and the mother, who feeds the fire and then goes out to kneel by the jar.
+- The ambient sound is synthesized with Web Audio. The face's voice is 18 short recordings generated with Xiaomi MiMo-V2.5-TTS (built-in voice "Chloe") and mixed in code with ffmpeg. The voice starts in a "costume": a lower shadow voice and the hollow ring of a clay jar. The costume thins out act by act; for the last two lines only the clean voice is left.
+- Lines are queued by `src/core/narrator.ts`: each line waits for the previous one, subtitles keep pace with the voice, pause holds the voice in place, and with sound off the story keeps the same timing.
 - `src/content/strings.json` holds all text: `story` (the face's lines, fiction) and `real` (history). Each `real` line cites fact IDs from `context/research-urn-burial.md`; `scripts/check-facts.mjs` fails the build on uncited, disputed-but-unlabelled or off-screen claims, and on forbidden wording anywhere.
 
 ## How Kiro was used
@@ -31,11 +41,13 @@ No backend, no account, no tracking. Works with mouse, touch or keyboard (arrow 
 - **Steering**: `.kiro/steering/` (product, tech, structure, contest rules, collaboration rules) and `AGENTS.md`.
 - **Spec-driven development**: `.kiro/specs/urn-experience/` — `requirements.md` (12 requirements, 49 acceptance criteria) → `design.md` → `tasks.md`.
 - **Hooks**: `.kiro/hooks/fact-check-on-save.json` runs the fact check whenever story text or the fact table is saved.
-- **Property-based tests** for the scene machine, dig coverage and lamp motion.
+- **Property-based tests** for the scene machine, dig coverage, lamp motion and the voice queue (lines never overlap or reorder).
 
 ## Sources and disclosure
 
 Sources are listed in the app (*What is real*, at the end) and in `context/research-urn-burial.md`. The project was created during the Submission Period. No pre-existing code is included.
+
+The voice recordings were generated with a third-party service (Xiaomi MiMo-V2.5-TTS). The MIT license covers the code; the terms that apply to the generated audio are still being checked (see `context/open-questions.md`, Q-10).
 
 ## License
 
@@ -48,7 +60,7 @@ MIT, see `LICENSE`.
 | 文件 | 内容 |
 | --- | --- |
 | `AGENTS.md` | Kiro 必读入口：约束、协作约定、导航、关键日期 |
-| `decisions/DECISIONS.md` | 决策记录（D-001 ~ D-005） |
+| `decisions/DECISIONS.md` | 决策记录（D-001 ~ D-010） |
 | `context/research-urn-burial.md` | 史实核对表 F1–F14，上屏文字的依据 |
 | `context/rules-verified.md` / `open-questions.md` | 官方规则（已核实 / 待核实）与待办 |
 | `ideas/IDEAS.md` | 创意记录 |

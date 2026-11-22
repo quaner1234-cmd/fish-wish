@@ -7,6 +7,7 @@ import { Input } from "./core/input";
 import { Lamp } from "./core/lamp";
 import { initialState, reduce, sceneOf, type Command, type MachineState, type SceneId } from "./core/machine";
 import { motionFactor, reducedMotion } from "./core/motion";
+import { Narrator } from "./core/narrator";
 import { TextLayer } from "./core/text";
 import { renderDigObjects, renderSoil, renderUrnView } from "./art/pottery";
 import { AgainScene } from "./scenes/again";
@@ -25,7 +26,6 @@ const s = strings;
 document.title = s.ui.title;
 $("start-title").textContent = s.ui.title;
 $("start-sub").textContent = s.ui.subtitle;
-$("start-note").textContent = `${s.real.inspired.text} ${s.ui.contentNote}`;
 $("start-sound").textContent = s.ui.soundNote;
 $("start-controls").textContent = s.ui.controlsNote;
 $("btn-start").textContent = s.ui.begin;
@@ -34,6 +34,12 @@ $("btn-skip").textContent = s.ui.skip;
 $("paused-text").textContent = s.ui.paused;
 $("btn-resume").textContent = s.ui.resume;
 $("btn-again").textContent = s.ui.again;
+// The ending card (D-008): what inspired the story, one sentence at a time.
+for (const sentence of s.real.inspired.text.split(/(?<=\.)\s+/)) {
+  const p = document.createElement("p");
+  p.textContent = sentence;
+  $("end-card").append(p);
+}
 $("btn-sources").textContent = s.ui.sources;
 $("btn-sources-close").textContent = s.ui.close;
 $("sources-title").textContent = s.sources.title;
@@ -131,7 +137,18 @@ const input = new Input(stageEl, W, H);
 lamp.place(W / 2, H / 2);
 const text = new TextLayer();
 const audio = new AudioEngine();
-const env: Env = { w: W, h: H, input, lamp, text, audio, s, art, motion: motionFactor(), reduced: reducedMotion() };
+// The face's recorded lines (D-009): fetched in the background while the start screen is read.
+audio.preloadVoices(Object.fromEntries(Object.keys(s.story).map((id) => [id, `${import.meta.env.BASE_URL}voice/${id}.mp3`])));
+const voice = new Narrator(
+  {
+    show: (line, seconds) => text.narration.show(line, true, seconds),
+    play: (id) => audio.voice(id),
+    fallback: () => audio.breath(),
+    stop: () => audio.stopVoice(),
+  },
+  (id) => s.story[id],
+);
+const env: Env = { w: W, h: H, input, lamp, text, audio, voice, s, art, motion: motionFactor(), reduced: reducedMotion() };
 resize();
 window.addEventListener("resize", resize);
 
@@ -168,6 +185,7 @@ function advance(cmd: Command) {
     fade.a = 0;
   }
   if (machine.index === 0 && cmd === "skip") return; // the story starts with Begin
+  if (cmd === "skip") voice.clear();
   if (scene.exitFade === "none") return switchScene(cmd);
   fade.phase = "out";
   fade.a = 0;
@@ -177,6 +195,8 @@ function advance(cmd: Command) {
 
 function switchScene(cmd: Command) {
   scene.exit(env);
+  // Lines belong to their scene; anything not yet said is dropped (skip).
+  voice.clear();
   machine = reduce(machine, cmd);
   if (machine.finished) {
     showEnd();
@@ -187,7 +207,10 @@ function switchScene(cmd: Command) {
 }
 
 function restart() {
+  window.clearTimeout(endTimer);
   hide("end");
+  $("end").classList.remove("ready", "now");
+  voice.clear();
   text.clear();
   machine = reduce(machine, "restart");
   scene.exit(env);
@@ -260,7 +283,11 @@ function compose(lit: Lighting, time: number) {
 // ---------- Main loop ----------
 // `?perf` exposes rolling per-frame timings (ms) on window.__perf, for profiling only.
 const perf = new URLSearchParams(location.search).has("perf") ? { update: 0, render: 0, compose: 0, fx: 0 } : null;
-if (perf) (window as unknown as { __perf: typeof perf }).__perf = perf;
+if (perf) {
+  const w = window as unknown as { __perf: typeof perf; __voice: () => object };
+  w.__perf = perf;
+  w.__voice = () => ({ ...audio.voiceState(), line: voice.current, busy: voice.busy, scene: sceneOf(machine) });
+}
 let last = performance.now();
 let clock = 0;
 function frame(now: number) {
@@ -273,6 +300,7 @@ function frame(now: number) {
   lamp.update(dt, input.x, input.y, W, H, env.motion);
 
   if (!machine.paused) {
+    voice.update(dt);
     const signal = scene.update(dt, env);
     if (signal === "next") advance("next");
     if (fade.phase === "out") {
@@ -356,11 +384,37 @@ function setPaused(p: boolean) {
   }
 }
 
+// The ending: the last line fades, the card's sentences arrive one by one (CSS),
+// then the two buttons. A click or key shows everything at once.
+const END_READY_MS = 9000;
+let endTimer: number | undefined;
+function endReady() {
+  window.clearTimeout(endTimer);
+  const end = $("end");
+  if (end.hidden || end.classList.contains("ready")) return;
+  end.classList.add("ready");
+  $("btn-again").focus();
+}
 function showEnd() {
+  text.narration.hide();
   show("end");
   hide("controls");
-  window.setTimeout(() => $("btn-again").focus(), 50);
+  endTimer = window.setTimeout(endReady, reducedMotion() ? 600 : END_READY_MS);
 }
+$("end").addEventListener("click", (e) => {
+  if ((e.target as HTMLElement).closest("button")) return;
+  $("end").classList.add("now");
+  endReady();
+});
+window.addEventListener("keydown", (e) => {
+  const end = $("end");
+  if (end.hidden || end.classList.contains("ready") || !$("sources").hidden) return;
+  if (e.key === "Enter" || e.key === " " || e.key === "Escape") {
+    e.preventDefault();
+    end.classList.add("now");
+    endReady();
+  }
+});
 
 $("btn-start").addEventListener("click", () => {
   audio.init();

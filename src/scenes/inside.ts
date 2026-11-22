@@ -1,7 +1,7 @@
 // Scene 2: inside the jar, looking up. A face, painted on the inside of the basin,
 // comes together only where the lamp has been (R3). No jump scares (R3.3).
 
-import { Cues, speak, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
+import { Cues, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
 import type { UrnView } from "./urnview";
 
 export class InsideScene implements Scene {
@@ -10,6 +10,7 @@ export class InsideScene implements Scene {
   private sinceSample = 0;
   private reveal = 0;
   private told = false;
+  private queued = false;
   private flinched = false;
   private finish = false;
   private hintPos: { x: number; y: number } | null = null;
@@ -24,6 +25,7 @@ export class InsideScene implements Scene {
     this.view.resetMemory();
     this.reveal = 0;
     this.told = false;
+    this.queued = false;
     this.flinched = false;
     this.finish = false;
     this.dread = 0;
@@ -59,7 +61,7 @@ export class InsideScene implements Scene {
       this.flinched = true;
       env.lamp.shiver = 0.78;
       env.text.hint.hide();
-      speak(env, env.s.story.thereYouAre);
+      env.voice.say("thereYouAre", { gap: 0 });
     }
     const target = Math.min(1, this.reveal * 1.2) * (near ? 1 : 0.6);
     this.dread += (target - this.dread) * Math.min(1, dt * 1.5);
@@ -68,21 +70,21 @@ export class InsideScene implements Scene {
     if (!this.told && this.reveal >= 0.6) {
       this.told = true;
       env.text.hint.hide();
-      const st = env.s.story;
       // "There you are." comes the first time the light finds the face; then the rest.
-      let d = 1.2;
       if (!this.flinched) {
         this.flinched = true;
-        speak(env, st.thereYouAre);
-        d = 4.5;
+        env.voice.say("thereYouAre", { gap: 0 });
       }
-      this.cues.after(d, () => speak(env, st.dontBeAfraid));
-      this.cues.after(d + 6, () => speak(env, st.motherMade));
-      this.cues.after(d + 12, () => speak(env, st.fishToHold));
-      this.cues.after(d + 18.5, () => {
-        env.text.narration.hide();
-        this.finish = true;
+      this.cues.after(1.2, () => {
+        env.voice.say("dontBeAfraid", { gap: 1.8 });
+        env.voice.say("motherMade", { gap: 1.4 });
+        env.voice.say("fishToHold", { gap: 1.2 });
+        this.queued = true;
       });
+    }
+    if (this.queued && !this.finish && env.voice.idleFor > 2) {
+      env.text.narration.hide();
+      this.finish = true;
     }
     return this.finish ? "next" : "stay";
   }

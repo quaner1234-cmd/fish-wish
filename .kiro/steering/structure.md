@@ -1,28 +1,29 @@
 # Project Structure — 探索工作区布局
 
-## 当前结构（探索阶段；尚无应用源码）
+## 当前结构（故事版已上线，2026-11-22）
 
 ```
-D:\Projects\kiroween-2026\
+kiroween-2026\                      # 公开仓库 fish-wish 的根目录
 ├── AGENTS.md                       # Kiro 必读入口（始终加载）
 ├── README.md                       # 人类导航入口
 ├── .gitignore                      # 明确不含 .kiro
 ├── index.html / vite.config.ts / tsconfig.json / package.json / LICENSE (MIT)
 ├── src\                            # 应用源码，布局见 design.md §2
-├── scripts\                        # check-facts.mjs + fact-check-lib.mjs（事实检查）
+├── public\voice\                   # 那张脸的配音，每句一个 MP3（D-009）
+├── scripts\                        # 事实检查；配音生成 / 混音 / 机器核对（mimo.mjs、voice-*.mjs）
 ├── tests\                          # Vitest + fast-check
-├── _scratch\                       # 本地临时文件（浏览器脚本、截图、第三方素材），已 gitignore
+├── _scratch\                       # 本地临时文件（浏览器脚本、截图、原始配音 WAV、第三方素材），已 gitignore
 ├── .kiro\
 │   ├── hooks\
 │   │   └── fact-check-on-save.json # 保存文案或事实表时运行事实检查
 │   ├── specs\
 │   │   └── urn-experience\
-│   │       ├── requirements.md     # 需求（已通过）
-│   │       ├── design.md           # 设计 v0.2
+│   │       ├── requirements.md     # 需求 v0.4
+│   │       ├── design.md           # 设计 v0.4
 │   │       └── tasks.md            # 任务与进度
 │   └── steering\
 │       ├── product.md              # 产品概览 / 目标 / 待定项
-│       ├── tech.md                 # 技术栈（未定）+ 本机环境
+│       ├── tech.md                 # 技术栈（D-005）+ 运行条件
 │       ├── structure.md            # 本文件
 │       ├── contest-rules.md        # 影响日常开发的规则要点
 │       └── collaboration.md        # 与 Kiro 的协作约定
@@ -32,7 +33,7 @@ D:\Projects\kiroween-2026\
 │   ├── dev-environment.md          # 实测开发环境（仅本地，gitignore）
 │   ├── reference-emails.md         # Gmail 参考邮件索引（仅本地，gitignore）
 │   ├── open-questions.md           # 待核实 + 待决定主清单
-│   ├── research-urn-burial.md      # 史实核对（F1–F13），上屏文字的依据
+│   ├── research-urn-burial.md      # 史实核对（F1–F14），上屏文字的依据
 │   └── evidence\
 │       ├── kiroween-rules-2026-11-13.txt   # 官方规则原文快照
 │       └── SHA256SUMS.txt                  # 快照哈希

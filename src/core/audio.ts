@@ -1,7 +1,12 @@
-// All sound is synthesized here with Web Audio (R8.3). Nothing plays before
-// the user presses Begin (R8.1). Mute state persists in localStorage (R8.2).
+// The ambient sound is synthesized here with Web Audio (R8.3); the face's voice is
+// a set of short recordings (D-009) played through the same master, so mute and
+// pause cover both. Nothing plays before the user presses Begin (R8.1).
+// Mute state persists in localStorage (R8.2).
 
 export type Layer = "drone" | "earth" | "brush" | "tension" | "shimmer" | "warm";
+
+/** How far the ambient bed dips while the face is speaking. */
+const DUCK = 0.62;
 
 const MUTE_KEY = "urn-experience.muted";
 const PENTATONIC = [220, 246.94, 277.18, 329.63, 369.99, 440];
@@ -10,8 +15,13 @@ const SCALE: Record<Layer, number> = { drone: 0.22, earth: 0.12, brush: 0.16, te
 export class AudioEngine {
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
+  private bed: GainNode | null = null;
   private layers = new Map<Layer, GainNode>();
   private paused = false;
+  private voiceFiles = new Map<string, Promise<ArrayBuffer | null>>();
+  private voices = new Map<string, AudioBuffer>();
+  private playing: { id: string; src: AudioBufferSourceNode; gain: GainNode; startedAt: number; offset: number } | null = null;
+  private held: { id: string; offset: number } | null = null;
   muted: boolean;
 
   constructor() {
@@ -39,8 +49,98 @@ export class AudioEngine {
     master.gain.value = 0;
     master.connect(ctx.destination);
     this.master = master;
-    this.build(ctx, master);
+    const bed = ctx.createGain();
+    bed.connect(master);
+    this.bed = bed;
+    this.build(ctx, bed);
     this.applyMaster();
+    this.decodeVoices(ctx);
+  }
+
+  /** Start downloading the voice recordings. Safe before init; decoding waits for it. */
+  preloadVoices(urls: Record<string, string>) {
+    for (const [id, url] of Object.entries(urls)) {
+      if (this.voiceFiles.has(id)) continue;
+      this.voiceFiles.set(
+        id,
+        fetch(url)
+          .then((r) => (r.ok ? r.arrayBuffer() : null))
+          .catch(() => null),
+      );
+    }
+    if (this.ctx) this.decodeVoices(this.ctx);
+  }
+
+  private decodeVoices(ctx: AudioContext) {
+    for (const [id, file] of this.voiceFiles) {
+      if (this.voices.has(id)) continue;
+      void file
+        .then((buf) => (buf ? ctx.decodeAudioData(buf.slice(0)) : null))
+        .then((audio) => {
+          if (audio) this.voices.set(id, audio);
+        })
+        .catch(() => {
+          /* a line that fails to decode is shown as text only */
+        });
+    }
+  }
+
+  /** For profiling and QA only: how many lines are decoded, which one is playing. */
+  voiceState() {
+    return { decoded: this.voices.size, playing: this.playing?.id ?? null, held: this.held?.id ?? null, ctx: this.ctx?.state ?? "none" };
+  }
+
+  /** Play one voice line from its start. Returns false if it is not ready. */
+  voice(id: string): boolean {
+    if (!this.ctx || !this.voices.has(id)) return false;
+    this.stopVoice(0.12);
+    if (this.paused) {
+      this.held = { id, offset: 0 };
+      return true;
+    }
+    this.startVoice(id, 0);
+    return true;
+  }
+
+  private startVoice(id: string, offset: number) {
+    const ctx = this.ctx;
+    const buffer = this.voices.get(id);
+    if (!ctx || !this.master || !buffer) return;
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    const gain = ctx.createGain();
+    src.connect(gain).connect(this.master);
+    const entry = { id, src, gain, startedAt: ctx.currentTime, offset };
+    src.onended = () => {
+      if (this.playing === entry) {
+        this.playing = null;
+        this.duck(false);
+      }
+    };
+    src.start(ctx.currentTime, Math.min(offset, Math.max(0, buffer.duration - 0.01)));
+    this.playing = entry;
+    this.duck(true);
+  }
+
+  /** Fade the current line out (skip, restart, a new line). */
+  stopVoice(fade = 0.25) {
+    this.held = null;
+    const p = this.playing;
+    if (!p || !this.ctx) return;
+    this.playing = null;
+    const now = this.ctx.currentTime;
+    p.gain.gain.setTargetAtTime(0, now, fade / 4);
+    try {
+      p.src.stop(now + fade);
+    } catch {
+      /* already stopped */
+    }
+    this.duck(false);
+  }
+
+  private duck(on: boolean) {
+    if (!this.ctx || !this.bed) return;
+    this.bed.gain.setTargetAtTime(on ? DUCK : 1, this.ctx.currentTime, on ? 0.12 : 0.6);
   }
 
   /** A faint breath under the face's voice. */
@@ -175,8 +275,20 @@ export class AudioEngine {
   }
 
   setPaused(p: boolean) {
+    if (p === this.paused) return;
     this.paused = p;
     this.applyMaster();
+    // The voice holds its place while paused and picks up where it stopped.
+    if (p && this.playing && this.ctx) {
+      const { id, startedAt, offset } = this.playing;
+      const at = offset + (this.ctx.currentTime - startedAt);
+      this.stopVoice(0.08);
+      this.held = { id, offset: at };
+    } else if (!p && this.held) {
+      const { id, offset } = this.held;
+      this.held = null;
+      this.startVoice(id, offset);
+    }
   }
 
   private applyMaster() {

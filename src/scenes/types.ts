@@ -1,5 +1,6 @@
 import type { Input } from "../core/input";
 import type { Lamp } from "../core/lamp";
+import type { Narrator } from "../core/narrator";
 import type { TextLayer } from "../core/text";
 import type { AudioEngine } from "../core/audio";
 import type strings from "../content/strings.json";
@@ -19,6 +20,8 @@ export interface Env {
   lamp: Lamp;
   text: TextLayer;
   audio: AudioEngine;
+  /** The face's voice: queue lines with `say`, check `busy` / `idleFor`. */
+  voice: Narrator;
   s: Strings;
   art: Art;
   motion: number;
@@ -57,12 +60,6 @@ export interface Scene {
   /** Where to place a quiet glimmer if the user has been idle (R1.5). */
   hint(env: Env): { x: number; y: number } | null;
   exit(env: Env): void;
-}
-
-/** The face speaks: its line arrives letter by letter, over a faint breath. */
-export function speak(env: Env, text: string) {
-  env.text.narration.show(text, true);
-  env.audio.breath();
 }
 
 /** Timed cues on scene time, so pausing the story pauses them too. */

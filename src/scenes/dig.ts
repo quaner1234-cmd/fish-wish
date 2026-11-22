@@ -2,7 +2,7 @@
 
 import { alphaChannel, circleMask, coverageRatio } from "../core/coverage";
 import { DIG, canvas } from "../art/pottery";
-import { Cues, speak, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
+import { Cues, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
 
 const STAGE = 1024;
 const SAMPLE = 64;
@@ -37,7 +37,7 @@ export class DigScene implements Scene {
   private hintPos: { x: number; y: number } | null = null;
   private seed = 1;
   private said = 0;
-  private spokeAt = -99;
+  private lastQueued = false;
 
   enter(env: Env) {
     this.sg.globalCompositeOperation = "source-over";
@@ -51,7 +51,7 @@ export class DigScene implements Scene {
     this.prev = null;
     this.motes = [];
     this.said = 0;
-    this.spokeAt = -99;
+    this.lastQueued = false;
     env.lamp.radius = Math.min(env.w, env.h) * 0.17;
     env.audio.set({ drone: 0.55, earth: 0.9, tension: 0, shimmer: 0, warm: 0, brush: 0 }, 2);
     this.cues.add(1.2, () => env.text.hint.show(env.s.ui.digHint));
@@ -124,14 +124,13 @@ export class DigScene implements Scene {
       this.hintPos = this.pickHint(alpha);
       if (this.coverage > 0.12) env.text.hint.hide();
       // Something under the earth notices you (story, not history).
+      // If you dig fast, the next line waits for the one still being spoken.
       if (this.said === 0 && this.coverage > 0.15) {
         this.said = 1;
-        this.spokeAt = this.cues.t;
-        speak(env, env.s.story.digSomeone);
+        env.voice.say("digSomeone");
       } else if (this.said === 1 && this.coverage > 0.42) {
         this.said = 2;
-        this.spokeAt = this.cues.t;
-        speak(env, env.s.story.digLong);
+        env.voice.say("digLong");
       }
       if (this.coverage >= DONE_AT) this.onFound(env);
     }
@@ -157,6 +156,10 @@ export class DigScene implements Scene {
       m.vx *= 1 - dt * 1.5;
     }
     this.motes = this.motes.filter((m) => m.life > 0);
+    if (this.lastQueued && !this.finish && env.voice.idleFor > 1.6) {
+      env.text.narration.hide();
+      this.finish = true;
+    }
     return this.finish ? "next" : "stay";
   }
 
@@ -165,12 +168,9 @@ export class DigScene implements Scene {
     env.text.hint.hide();
     env.audio.set({ brush: 0, earth: 0.5, drone: 0.75 }, 2);
     env.audio.bell(0, 0.05);
-    // Let the previous line finish before the next one (it needs about 5 s to read).
-    const wait = Math.max(1.4, this.spokeAt + 5.5 - this.cues.t);
-    this.cues.after(wait, () => speak(env, env.s.story.digCareful));
-    this.cues.after(wait + 7, () => {
-      env.text.narration.hide();
-      this.finish = true;
+    this.cues.after(1.4, () => {
+      env.voice.say("digCareful", { gap: 1.5 });
+      this.lastQueued = true;
     });
   }
 

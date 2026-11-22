@@ -1,6 +1,6 @@
 // Scene 3: a small hole in the basin lets in light. Two readings of why (R4).
 
-import { Cues, speak, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
+import { Cues, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
 import type { UrnView } from "./urnview";
 
 export class HoleScene implements Scene {
@@ -10,7 +10,6 @@ export class HoleScene implements Scene {
   private dwell = 0;
   private told = false;
   private ready = false;
-  private readyAt = 0;
   private zooming = 0;
   private finish = false;
   private sinceResidue = 0;
@@ -57,19 +56,21 @@ export class HoleScene implements Scene {
       env.text.hint.hide();
       env.audio.bell(3, 0.045);
       env.audio.set({ tension: 0, drone: 0.5 }, 4);
-      const st = env.s.story;
-      this.cues.after(0.3, () => speak(env, st.fatherHole));
-      this.cues.after(4.8, () => speak(env, st.motherSoul));
-      this.cues.after(11, () => speak(env, st.fatherBreathe));
-      this.cues.after(17.5, () => {
-        speak(env, st.followLight);
-        env.text.hint.show(env.s.ui.continue);
-        this.ready = true;
-        this.readyAt = this.cues.t;
+      this.cues.after(0.3, () => {
+        env.voice.say("fatherHole", { gap: 0 });
+        env.voice.say("motherSoul", { gap: 1.3 });
+        env.voice.say("fatherBreathe", { gap: 1.5 });
+        env.voice.say("followLight", {
+          gap: 1.6,
+          onStart: () => {
+            env.text.hint.show(env.s.ui.continue);
+            this.ready = true;
+          },
+        });
       });
     }
-    // R4.4: continue on click / Enter, or by itself after a few seconds.
-    if (this.ready && this.zooming === 0 && (env.input.confirmed || this.cues.t - this.readyAt > 7)) {
+    // R4.4: continue on click / Enter, or by itself a few seconds after the last line.
+    if (this.ready && this.zooming === 0 && (env.input.confirmed || env.voice.idleFor > 4)) {
       this.zooming = 0.0001;
       env.text.clear();
       env.audio.set({ shimmer: 1, warm: 0.4, drone: 0.2 }, 2.5);

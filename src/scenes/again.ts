@@ -1,7 +1,7 @@
 // Scene 5: the same face, in warm light. Nothing about the picture changes (R6.1).
 // Only the light moves: when the face speaks of its closed eyes, the light rests on them.
 
-import { Cues, speak, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
+import { Cues, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
 import type { UrnView } from "./urnview";
 
 export class AgainScene implements Scene {
@@ -10,6 +10,7 @@ export class AgainScene implements Scene {
   private warmth = 0;
   private eyes = 0;
   private eyesTarget = 0;
+  private queued = false;
   private finish = false;
 
   constructor(private view: UrnView) {}
@@ -19,30 +20,24 @@ export class AgainScene implements Scene {
     this.warmth = 0;
     this.eyes = 0;
     this.eyesTarget = 0;
+    this.queued = false;
     this.finish = false;
     this.view.zoom = 1;
     this.view.focus = 0;
     env.lamp.radius = Math.min(env.w, env.h) * 0.2;
     env.audio.set({ warm: 0.85, drone: 0.12, earth: 0.08, tension: 0, shimmer: 0.25, brush: 0 }, 4);
-    const st = env.s.story;
-    this.cues.add(1.5, () => speak(env, st.lookAgain));
-    this.cues.add(6.5, () => {
-      this.eyesTarget = 1;
-      speak(env, st.eyesClosed);
+    this.cues.add(1.5, () => {
+      env.voice.say("lookAgain", { gap: 0 });
+      env.voice.say("eyesClosed", { gap: 2.2, onStart: () => (this.eyesTarget = 1) });
+      env.voice.say("promise", { gap: 2, onStart: () => (this.eyesTarget = 0) });
+      env.voice.say("stillDoes", { gap: 2.2, onStart: () => env.audio.bell(2, 0.04) });
+      this.queued = true;
     });
-    this.cues.add(13, () => {
-      this.eyesTarget = 0;
-      speak(env, st.promise);
-    });
-    this.cues.add(20, () => {
-      speak(env, st.stillDoes);
-      env.audio.bell(2, 0.04);
-    });
-    this.cues.add(26.5, () => (this.finish = true));
   }
 
   update(dt: number, env: Env): Signal {
     this.cues.update(dt);
+    if (this.queued && env.voice.idleFor > 3.5) this.finish = true;
     this.view.update(dt, env, false);
     this.warmth = Math.min(1, this.warmth + dt / 10);
     this.eyes += (this.eyesTarget - this.eyes) * Math.min(1, dt * 0.8);
