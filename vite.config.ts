@@ -6,6 +6,10 @@ export default defineConfig({
   build: {
     target: "es2022",
     assetsInlineLimit: 0,
+    rollupOptions: {
+      // act4.html: the 3D act 4 prototype (D-011), a separate page for comparison.
+      input: { main: "index.html", act4: "act4.html" },
+    },
   },
   plugins: [
     {
