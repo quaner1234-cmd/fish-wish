@@ -6,6 +6,7 @@
 // by the jar. She is imagined, like everyone in the story (R7).
 
 import { drawFigure, type Pose } from "../art/figure";
+import { drawInfant } from "../art/infant";
 import { mulberry32 } from "../core/rng";
 import { Cues, type Env, type Fx, type Lighting, type Scene, type Signal } from "./types";
 
@@ -628,7 +629,10 @@ export class AscentScene implements Scene {
     g.fill();
   }
 
-  /** The jar in section: hollow, no remains shown (R12.1); the basin upturned on its mouth. */
+  /**
+   * The jar in section, the basin upturned on its mouth. The child inside is drawn
+   * separately, as light, after the scene is lit (drawChild, D-015); no remains (R12.1).
+   */
   private drawJar(g: CanvasRenderingContext2D, px: number) {
     const X = URN_X;
     g.fillStyle = "rgba(48, 33, 21, 0.55)";
@@ -770,9 +774,27 @@ export class AscentScene implements Scene {
     }
   }
 
+  /**
+   * The little one asleep in the jar (D-015): curled as in the womb, facing the side
+   * where the mother comes to kneel. Light, not a body; it glows a little more when
+   * the face says "by the door" and when she kneels. Drawn after the scene is lit,
+   * so it is seen even where the lamp is not.
+   */
+  private drawChild(g: CanvasRenderingContext2D, env: Env) {
+    const cam = this.camera(env);
+    const kneel = this.momGo ? smooth((this.momT - (MOM_DONE - MOM.kneel)) / MOM.kneel) : 0;
+    const breathe = 0.92 + 0.08 * Math.sin(this.clock * 1.3);
+    const glow = (0.55 + 0.2 * this.door + 0.25 * kneel) * breathe;
+    g.save();
+    g.translate(env.w / 2 - cam.x * cam.ppm, env.h / 2 - cam.y * cam.ppm);
+    g.scale(cam.ppm, cam.ppm);
+    drawInfant(g, URN_X - 0.01, 0.77, 0.26, -1, -0.22, glow, Math.max(3, 0.035 * cam.ppm));
+    g.restore();
+  }
+
   lighting(env: Env): Lighting {
     const t = this.camera(env).t;
-    return { ambient: 0.3 + 0.7 * Math.min(1, t * 1.4), lamp: Math.max(0, 1 - t * 2.5), warm: 0.6 };
+    return { ambient: 0.3 + 0.7 * Math.min(1, t * 1.4), lamp: Math.max(0, 1 - t * 2.5), warm: 0.6, over: (g) => this.drawChild(g, env) };
   }
 
   fx(): Fx {
