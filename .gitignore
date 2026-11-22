@@ -1,0 +1,26 @@
+# 依赖与构建产物
+node_modules/
+dist/
+build/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# 本地临时文件：浏览器脚本、截图、第三方视频/网页素材、转写稿。
+# 含第三方版权内容，不进公开仓库。
+_scratch/
+
+# 只留本地：含邮箱地址、第三方邮件联系人、本机路径（2026-11-22 公开仓库前排除）。
+context/reference-emails.md
+context/dev-environment.md
+
+# ⚠️ 不要忽略 .kiro ！
+# Kiroween 2026 官方规则要求公开 GitHub 仓库根目录必须包含 /.kiro
+# （specs / hooks / steering），并明确说明把 /.kiro 或其子目录加入
+# .gitignore "could disqualify your submission"。
+# 见 context/rules-verified.md「提交要求」。
+# 本工作区的 .kiro/steering/ 是需要随仓库一起提交的上下文文件。

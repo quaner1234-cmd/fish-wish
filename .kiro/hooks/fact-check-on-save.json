@@ -1,0 +1,12 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Fact-check story text on save",
+      "description": "Every on-screen historical line must cite a fact in context/research-urn-burial.md; disputed facts must be framed as readings; off-screen claims and forbidden words fail (requirements R7, R4.3).",
+      "trigger": "PostFileSave",
+      "matcher": "(src[\\\\/]content[\\\\/]strings\\.json|context[\\\\/]research-urn-burial\\.md)$",
+      "action": { "type": "command", "command": "node scripts/check-facts.mjs", "timeout": 30 }
+    }
+  ]
+}

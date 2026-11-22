@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 1,
+      "url": "https://kiroween.devpost.com/rules",
+      "title": "Kiroween 2026 Official Rules (Devpost)",
+      "accessed": "2026-11-13"
+    },
+    {
+      "id": 2,
+      "url": "https://kiroween.devpost.com",
+      "title": "Kiroween 2026 Overview (Devpost)",
+      "accessed": "2026-11-13"
+    },
+    {
+      "id": 3,
+      "url": "https://kiro.dev/docs/steering",
+      "title": "Kiro Docs: Steering",
+      "accessed": "2026-11-13"
+    },
+    {
+      "id": 4,
+      "url": "https://kiro.dev/docs/specs",
+      "title": "Kiro Docs: Specs",
+      "accessed": "2026-11-13"
+    }
+  ]
+}
