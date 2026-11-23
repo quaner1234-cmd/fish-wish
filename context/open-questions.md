@@ -13,7 +13,7 @@
 | ID | 问题 | 依据 | 如何核实 | 状态 |
 | --- | --- | --- | --- | --- |
 | **Q-01** | Alex 的居住地/身份是否属于合资格参赛者；以及 Kiro 在本区域可用的功能与 AI 模型（Regional Restrictions） | 规则 §3 列出排除地区；§4 明确「Entrants are solely responsible for reviewing and complying with all applicable regional restrictions」并指向 https://kiro.dev [1] | ① 对照 `context/evidence/kiroween-rules-2026-11-13.txt` §3 的完整排除清单与自身情况；② 查 https://kiro.dev 的 Regional Restrictions 说明；③ 有歧义则按规则 §「submit a written request for clarification」在截止前向主办方书面询问，或在 Discord `#kiroween-hackathon` 提问 | OPEN |
-| **Q-02** | 4,000 Kiro Credits **是否已实际兑换进 Kiro 账户** | 邮件 uid 7952 只证明「已批准 + 发放一次性兑换码」，不证明已兑换 [1] | 登录 Kiro → `kiro.dev/account/usage`，查看是否有带 `kiroween` 前缀的 credits；邮件称 1–2 分钟内可见 | OPEN |
+| **Q-02** | 4,000 Kiro Credits **是否已实际兑换进 Kiro 账户** | 邮件 uid 7952 只证明「已批准 + 发放一次性兑换码」，不证明已兑换 [1] | 2026-11-24 Alex 答复原话（m00670）："credits是说kiro的？早申请完了。" → 指 Kiro credits，Alex 称早申请完了；按 Alex 陈述视为已完成。是否已在 `kiro.dev/account/usage` 显示余额仍由 Alex 自行核对（不写入仓库） | CLOSED（按 Alex 陈述；未独立核实余额） |
 | **Q-03** | 官方规则自 2026-11-13 快照之后是否有更新 | 邮件 uid 7857 明确说 "Indonesia is now eligible ... The Official Rules have been updated"，并提供 Bahasa Indonesia 翻译链接；说明规则会被改 [1] | 已在 2026-11-23 重新抓取 https://kiroween.devpost.com/rules 并与 11-13 快照逐词 diff：**唯一实质变化是 2026-11-16 把 Australia 移出排除地区（澳居民现可参赛）**，其余条款无变化。详见 `rules-verified.md` A13；新快照 `context/evidence/kiroween-rules-2026-11-23.txt`（SHA256 已记入 `SHA256SUMS.txt`） | CLOSED |
 | **Q-04** | FAQ / Resources / Updates / Discussions 页是否存在 rules 页之外的 Costume Contest 细则 | 官网有 FAQ / Resources / Updates 等标签页；本工作区只核实了 rules 页与 overview 页 [2] | 已逐页抓取（2026-11-23）：FAQ [5]、Updates [6]、Resources [7]、Credits [8]、Discussions [9]。**未发现 rules 之外的额外硬性提交要求**；FAQ 的数条澄清（只收新项目、开源许可证、一类别+bonus、评委测试凭据字段、视频<3min、截止后不可改）已并入 `rules-verified.md` A7/A14 | CLOSED |
 | **Q-05** | Kiro 账号登录状态、Kiro user ID，以及 credits 余额的核对入口 | 邮件 uid 7952 要求「Log in to your Kiro account before you open this link」；uid 7853 说申请需 Kiro user ID 或 AWS account ID [1] | 打开 Kiro 确认登录；在 `kiro.dev/account/usage` 核对 credits；记录 Kiro user ID（**不写入仓库**） | OPEN |
@@ -34,20 +34,24 @@
 | **D-02** | 目标用户与要解决的真实问题 | 评审 Potential Impact 20% | [1] | OPEN |
 | **D-03** | 目标平台（Web / 桌面 / 移动）与运行方式 | 2026-11-21 已定：网页互动体验，Cloudflare Pages 静态托管（D-003 / D-005）。规则要求「在目标平台稳定运行」并「按视频所示工作」[1] | [1] | CLOSED |
 | **D-04** | 技术栈 | 2026-11-21 已定：Vite + TypeScript + Canvas 2D + 可降级 WebGL 特效层（D-005） | 必须用 Kiro 构建 [1] | CLOSED |
-| **D-05** | 个人参赛还是组队（≤3 人） | 规则允许两者；影响 Representative、奖金分配、学生奖资格 | [1]；邮件 uid 7853 | OPEN |
-| **D-06** | 是否申报 bonus 奖项（Startup / Student / Ghost of Kiroween Past / Kiro Crew / Best Demo / Blog / Social Blitz） | 各 bonus 有额外材料要求，需提前准备；表单须填 bonus category | [1][2] | OPEN |
+| **D-05** | 个人参赛还是组队（≤3 人） | 规则允许两者；影响 Representative、奖金分配、学生奖资格 | [1]；邮件 uid 7853 | OPEN（表单提交前必须确认；Alex 2026-11-24 授权提交表单但未指定此项） |
+| **D-06** | 是否申报 bonus 奖项（Startup / Student / Ghost of Kiroween Past / Kiro Crew / Best Demo / Blog / Social Blitz） | 各 bonus 有额外材料要求，需提前准备；表单须填 bonus category | [1][2] | OPEN（Alex 2026-11-24 授权提交表单，但 bonus 仍留空待其指定；见 Q-06） |
 | **D-07** | 何时建公开 GitHub 仓库、选哪个开源许可证 | 2026-11-21：许可证已定 MIT（D-006），`LICENSE` 已写；本地已 `git init`。**公开仓库何时建仍待 Alex 确认**。根目录须含 `/.kiro` 且不得进 `.gitignore`（已用 `git check-ignore` 确认未被忽略） | [1][2] | IN PROGRESS |
-| **D-08** | 演示视频的录制与 YouTube 上传 | 须 < 3 分钟、公开可见、展示真实运行、无无授权版权素材 | [1] | OPEN |
-| **D-09** | "how Kiro was used" 说明怎么写 | 评审 Technological Implementation 20%，官方列了可写点（specs / steering / hooks / custom agents / MCP / PBT / powers） | [1] | OPEN |
-| **D-10** | 提交材料直接用英文，还是中文正文 + 英文翻译 | 规则要求所有材料英文或附全套英文翻译 | [1] | OPEN |
+| **D-08** | 演示视频的录制与 YouTube 上传 | 须 < 3 分钟、公开可见、展示真实运行、无无授权版权素材 | [1] | IN PROGRESS（2026-11-24 视频已获 Alex 批准「视频OK」，YouTube 上传已授权；待实际上传并拿到公开链接） |
+| **D-09** | "how Kiro was used" 说明怎么写 | 评审 Technological Implementation 20%，官方列了可写点（specs / steering / hooks / custom agents / MCP / PBT / powers） | [1] | IN PROGRESS（英文草稿 `submission/devpost.md` 已写好，按真实使用的 spec/steering/hook/PBT/check-facts/决策记录写实；Alex 已授权表单，提交前不再逐字过审） |
+| **D-10** | 提交材料直接用英文，还是中文正文 + 英文翻译 | 规则要求所有材料英文或附全套英文翻译 | [1] | CLOSED（提交材料全英文；硬约束要求，草稿已是英文） |
 
 ## C. 已关闭 / 已确认（不重复列入待办）
 
 - 参赛类别 = Costume Contest（已核实 [1] + Alex 陈述 + 邮件 uid 7886 显示首次申请因未写类别被拒、后重新申请获批）
 - 已注册（邮件 uid 7853）
-- 4,000 credits 已批准发放（邮件 uid 7952）—— 但「已兑换」仍是 Q-02
+- 4,000 Kiro credits 已批准发放（邮件 uid 7952）；Alex 2026-11-24 称早申请完了 → Q-02 按其陈述关闭
 - 提交截止 2026-12-04 14:00 PT（[1]，无延期）
 - 仓库根目录须含 `/.kiro` 且不得进 `.gitignore`（[1][2]）
+- **最终作品名 = Fish Wish**（Alex 2026-11-24 明确，不再是暂定名；见 `decisions/DECISIONS.md` D-016）
+- **仓库卫生 = 方案 A：保持原样**（Alex 2026-11-24 选 A；不改历史、不强推、不删 Cloudflare 旧部署、不删分支；见 D-017）
+- **演示视频已获批准，YouTube 上传与表单提交已获授权**（Alex 2026-11-24；见 D-018）
+- **真机测试 Alex 确认 OK**（2026-11-24；Safari/真机不再列为 Agent 侧未测）
 
 ## 来源
 
