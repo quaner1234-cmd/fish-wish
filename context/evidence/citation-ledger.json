@@ -1,17 +1,17 @@
 {
-  "version": 1,
+  "version": 2,
   "sources": [
     {
       "id": 1,
       "url": "https://kiroween.devpost.com/rules",
       "title": "Kiroween 2026 Official Rules (Devpost)",
-      "accessed": "2026-11-13"
+      "accessed": "2026-11-23"
     },
     {
       "id": 2,
       "url": "https://kiroween.devpost.com",
       "title": "Kiroween 2026 Overview (Devpost)",
-      "accessed": "2026-11-13"
+      "accessed": "2026-11-23"
     },
     {
       "id": 3,
@@ -24,6 +24,36 @@
       "url": "https://kiro.dev/docs/specs",
       "title": "Kiro Docs: Specs",
       "accessed": "2026-11-13"
+    },
+    {
+      "id": 5,
+      "url": "https://kiroween.devpost.com/details/faqs",
+      "title": "Kiroween 2026 Frequently Asked Questions (Devpost)",
+      "accessed": "2026-11-23"
+    },
+    {
+      "id": 6,
+      "url": "https://kiroween.devpost.com/updates",
+      "title": "Kiroween 2026 Updates (Devpost)",
+      "accessed": "2026-11-23"
+    },
+    {
+      "id": 7,
+      "url": "https://kiroween.devpost.com/resources",
+      "title": "Kiroween 2026 Resources (Devpost)",
+      "accessed": "2026-11-23"
+    },
+    {
+      "id": 8,
+      "url": "https://kiroween.devpost.com/details/credit-info",
+      "title": "Kiroween 2026 Kiro Credits (Devpost)",
+      "accessed": "2026-11-23"
+    },
+    {
+      "id": 9,
+      "url": "https://kiroween.devpost.com/forum_topics",
+      "title": "Kiroween 2026 Discussions (Devpost forum topics)",
+      "accessed": "2026-11-23"
     }
   ]
 }

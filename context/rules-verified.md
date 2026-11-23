@@ -1,7 +1,9 @@
 # Kiroween 2026 官方规则 — 已核实 / 待核实
 
 > 抓取时间：2026-11-13（本机 `curl https://kiroween.devpost.com/rules`，HTTP 200）。
-> 原文快照：`context/evidence/kiroween-rules-2026-11-13.txt`；SHA256 见同目录 `SHA256SUMS.txt`。
+> 复核时间：2026-11-23（重新抓取 rules / FAQ / Resources / Updates / Discussions，`curl` HTTP 200，curl 走本机代理直连）。
+> 原文快照：`context/evidence/kiroween-rules-2026-11-13.txt`（旧）与 `context/evidence/kiroween-rules-2026-11-23.txt`（本次复核）；FAQ / Updates 快照同目录 `kiroween-faqs-2026-11-23.txt`、`kiroween-updates-2026-11-23.txt`；SHA256 见 `SHA256SUMS.txt`。
+> **2026-11-23 复核结论：与 11-13 快照逐词 diff，规则正文唯一实质变化是 2026-11-16 官方把 Australia 移出排除地区（即澳大利亚居民现可参赛），见 A13；其余条款无变化。**
 > 本文是工作区内**规则内容的单一事实来源**。其他文件引用本文，不另写一份。
 > **标注「待核实」的项目不做推测**，统一见 `context/open-questions.md`。
 
@@ -28,7 +30,9 @@
 
 - 开放给：达到所在地法定成年年龄的个人；由合资格个人组成的团队（**每队最多 3 人**）；参赛时已合法存在的组织。
 - 不开放给：居民/注册地属于规则所列排除地区的个人或组织；Promotional Entities 及其雇员/代理/近亲属；评委及其雇主；上述主体的母/子/关联公司；主办方认定存在利益冲突者。
-- 规则原文列出的排除地区包括（但不限于）：Quebec（省）、Argentina、Australia、Brazil、Italy、Philippines、Russia、Cuba、Iran、North Korea、Syria、Belarus、Crimea 地区、DNR、LNR、United Arab Emirates，以及被美国 OFAC 全面制裁的任何国家。
+- 规则原文列出的排除地区包括（但不限于）：Quebec（省）、Argentina、Brazil、Italy、Philippines、Russia、Cuba、Iran、North Korea、Syria、Belarus、Crimea 地区、DNR、LNR、United Arab Emirates，以及被美国 OFAC 全面制裁的任何国家。
+  - **2026-11-23 复核：`Australia` 已不在排除清单。** 2026-11-16 官方更新把澳大利亚居民纳入合资格范围（rules 页页首注记 "*Updated November 16, 2026, to include residents of Australia."；Updates 页 7 天前公告 "Eligibility Update: Australia now included!"）。详见 A13。[1][6]
+  - 注：早期邮件 uid 7857 与 Updates 页还公告过 **Indonesia** 已合资格（2026-11 上旬），11-13 快照及本页已反映（含 Bahasa Indonesia 规则翻译）。
 - **待核实**：Alex 的居住地/身份是否属于合资格范围，见 Q-01。此处不代为判断。
 
 ### A4. 参赛类别与 Costume Contest 原文 [1][2]
@@ -75,7 +79,7 @@ Costume Contest 原文：
 | 8 | Skeleton Crew 专属：仓库须含 2 个独立应用文件夹（本项目不适用） |
 | 9 | Startup / Student / Kiro Crew / Social Blitz / Blog 等 bonus 有各自附加要求（见 A9） |
 | 10 | 一份 **"how Kiro was used"** 说明，评审需据此判断 Kiro 使用是否有效；官方列出的可写点：IDE / CLI / Web / Crew 的差异、custom agents、agent hooks、spec-driven development、steering docs、MCP、property-based testing (PBT)、Kiro powers |
-| 11 | **Testing**: 须免费、无限制地向 Sponsor / Administrator / Judges 提供可运行项目访问，直至 Judging Period 结束；评委无义务实测，可仅依据文字/图片/视频评分；不按要求提供访问可能被取消资格 |
+| 11 | **Testing**: 须免费、无限制地向 Sponsor / Administrator / Judges 提供可运行项目访问，直至 Judging Period 结束；评委无义务实测，可仅依据文字/图片/视频评分；不按要求提供访问可能被取消资格。FAQ 补充：须提供可运行 App 的 URL；**若评委测试需要登录，把测试凭据与说明填在 Devpost 提交表单里，该字段只有评委可见** [5] |
 | 12 | **Language Requirements**: 所有提交材料须为英文；非英文须提供演示视频、文字说明、测试说明及其他材料的英文翻译 |
 | 13 | 多份提交须彼此"unique and substantially different" |
 | 14 | 提交须为参赛者原创、独自拥有、不侵犯他人 IP |
@@ -123,15 +127,45 @@ Costume Contest 原文：
 - 截止前可在 Devpost 保存 draft；截止后不得再改动已提交材料（但可继续更新 portfolio 里的项目）。
 - 截止后主办方可允许为移除侵权/PII/不当内容做局部修改，但须保持实质相同。
 
+### A13. 2026-11-16 规则更新：Australia 纳入合资格范围 [1][6]
+
+2026-11-23 复核时，对 rules 页正文做了逐词 diff（`_scratch/rules-refetch/diff_rules.py`，normalize 空白后比较）。结果：
+
+- **唯一实质差异**：排除地区清单中 `Australia` 被删除（旧：`Argentina, Australia, Brazil…`；新：`Argentina, Brazil…`）。这表示**澳大利亚居民现可参赛**。
+- 页首新增注记：`*Updated November 16, 2026, to include residents of Australia.`
+- Updates 页（7 天前）公告："Eligibility Update: Australia now included! … residents of Australia are now eligible to participate! The Official Rules have been updated. If you requested credits and were denied because you live in Australia, you will be hearing from our team shortly." [6]
+- 另一处非规则变化：页面导航 "Participants (13089)" 更新为 "(18615)"，与规则无关。
+- **其余全部条款（时间、资格其余项、类别、作品/提交要求、评审、奖项、地区限制、歧义、草稿修改等）与 11-13 快照一致，无变化。**
+
+### A14. FAQ / Resources / Updates / Discussions 补充细则（Q-04 结果）[5][6][7][9]
+
+官方 **FAQ 页** [5] 明确了 rules 页之外、与提交直接相关的几点（原文要点）：
+
+- **只接受新项目**："Only new projects created during the Submission Period are eligible. This includes projects from Kiroween 2025."（即 2025 旧作不可复用）
+- **可用开源库/代码**：须遵守其许可证，项目须在其上构建并增强，提交须为**自己的原创作品**（见 IP 条款）。
+- **团队**：最多 3 人，一人（Representative）代表提交。
+- **一个类别**：每个项目只能进一个 category；bonus 奖可另申请任意符合的项。
+- **仓库**：必须公开 GitHub（不接受 GitLab/Bitbucket），About 区可见开源许可证，含 `/.kiro`，不得把 `/.kiro` 加进 `.gitignore`。
+- **App 须可运行**：提供可运行 URL；若需登录，测试凭据/说明填提交表单（仅评委可见）。
+- **视频**：< 3 分钟，上传 YouTube 并公开。
+- **获奖叠加**：一个项目可拿 1 个 Overall **或** 1 个 Category（二者不可兼得），并叠加任意数量 Bonus。
+- **截止后不可编辑**：先存 draft，12-04 14:00 PT 前提交。
+
+**Updates 页** [6] 除资格更新（Indonesia、Australia）外，另有 Build Session 录播与 credits 处理进展公告，**未见额外规则**。
+**Resources 页** [7] 是 credits 申请/兑换指南（含 ID 验证由 Didit 执行、Kiro user ID / AWS account ID 的查找、`app.kiro.dev/signin` 查看用量、Social Blitz 与 Blog bonus 具体要求），**未见 rules 之外的额外提交要求**。
+**Discussions（forum_topics）** [9] 为参赛者问答区；抓取到的主题列表以 credits / ID 验证进度问题为主，另有少量类别/资格/素材问题（如 "Calling a model API at runtime inside the app"、"May we use a Kiro-inspired ghost in our illustrations?"）。这些是**社区帖，不是官方规则**；未逐帖展开。**未发现改变提交要求的官方细则。**
+
+> 结论（Q-04）：FAQ / Resources / Updates / Discussions 中**未发现 rules 页之外的 Costume Contest 额外硬性要求**；FAQ 的数条澄清已并入 A7 与本节。
+
 ## B. 待核实（不做推测）
 
 以下项目**不自行推断**，主清单与核实方式见 `context/open-questions.md`：
 
-- Q-01 参赛资格与地区限制（含 Kiro Regional Restrictions）
-- Q-02 4,000 Credits 是否已兑换进 Kiro 账户
-- Q-03 官方规则是否有更新（本页为 2026-11-13 快照）
-- Q-04 FAQ / Resources 页是否存在 rules 页之外的细则
-- Q-08 $100,000 总奖池的官方口径
+- Q-01 参赛资格与地区限制（含 Kiro Regional Restrictions）—— 仍 OPEN（Alex 本人情况待确认）
+- Q-02 4,000 Credits 是否已兑换进 Kiro 账户 —— 仍 OPEN（需 Alex 登录核对）
+- ~~Q-03 官方规则是否有更新~~ —— **已核实（2026-11-23）**：仅 Australia 资格更新，其余无变化，见 A13
+- ~~Q-04 FAQ / Resources 页是否存在 rules 页之外的细则~~ —— **已核实（2026-11-23）**：未发现额外硬性要求，澄清已并入 A7/A14
+- Q-08 $100,000 总奖池的官方口径 —— 仍 OPEN（宣传口径，非规则表格数字）
 
 ## C. 来自邮件、非官方规则的补充（明确区分）
 
@@ -149,9 +183,17 @@ Costume Contest 原文：
 [2] https://kiroween.devpost.com — Kiroween 2026 Overview (Devpost)
 [3] https://kiro.dev/docs/steering — Kiro Docs: Steering
 [4] https://kiro.dev/docs/specs — Kiro Docs: Specs
+[5] https://kiroween.devpost.com/details/faqs — Kiroween 2026 FAQ (Devpost)
+[6] https://kiroween.devpost.com/updates — Kiroween 2026 Updates (Devpost)
+[7] https://kiroween.devpost.com/resources — Kiroween 2026 Resources (Devpost)
+[8] https://kiroween.devpost.com/details/credit-info — Kiroween 2026 Kiro Credits (Devpost)
+[9] https://kiroween.devpost.com/forum_topics — Kiroween 2026 Discussions (Devpost)
 
 ## 本地证据
 
 - `context/evidence/kiroween-rules-2026-11-13.txt`：2026-11-13 抓取的 rules 页 HTML 转文本全文（352 行），SHA256 `0d879f78f9b994bea35894dd7f91d113b27bc3cf0da8b5052f93e8da39359bc3`。
-- `context/evidence/SHA256SUMS.txt`：可用 `sha256sum -c` 复核。
-- 引用官方数字/日期/金额前，先对照该快照；规则可能更新，提交前须重新核对 rules 页。
+- `context/evidence/kiroween-rules-2026-11-23.txt`：2026-11-23 复核抓取的 rules 页全文，SHA256 `31d29c11d612843e8968d77d71267c6ce42f12b52445d3bb8621a410db20373e`。
+- `context/evidence/kiroween-updates-2026-11-23.txt`：2026-11-23 抓取的 Updates 页全文（含 Indonesia / Australia 资格公告），SHA256 `816bcd4cb745e992f46eecd59c649763725ec7cdd11eae6e2ef1ee7e6d0ba39b`。
+- `context/evidence/kiroween-faqs-2026-11-23.txt`：2026-11-23 抓取的 FAQ 页全文，SHA256 `ac1268701dfbc62a179703aa757061a039353036e18a884bdae0734218e838f7`。
+- `context/evidence/SHA256SUMS.txt`：列出以上快照哈希，可用 `sha256sum -c` 复核（已本机校验 4/4 OK）。
+- 引用官方数字/日期/金额前，先对照快照；规则可能更新，提交前须重新核对 rules 页。
