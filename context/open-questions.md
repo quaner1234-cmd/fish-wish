@@ -38,7 +38,7 @@
 | **D-06** | 是否申报 bonus 奖项（Startup / Student / Ghost of Kiroween Past / Kiro Crew / Best Demo / Blog / Social Blitz） | 各 bonus 有额外材料要求，需提前准备；表单须填 bonus category | [1][2] | CLOSED（2026-11-24 Alex 选「不申报」bonus；表单 bonus 字段留空/none） |
 | **D-07** | 何时建公开 GitHub 仓库、选哪个开源许可证 | 2026-11-21：许可证已定 MIT（D-006），`LICENSE` 已写；本地已 `git init`。**公开仓库何时建仍待 Alex 确认**。根目录须含 `/.kiro` 且不得进 `.gitignore`（已用 `git check-ignore` 确认未被忽略） | [1][2] | IN PROGRESS |
 | **D-08** | 演示视频的录制与 YouTube 上传 | 须 < 3 分钟、公开可见、展示真实运行、无无授权版权素材 | [1] | CLOSED（2026-11-24 用 Alex 自己的 YouTube 频道 Alex Jin / @alexjin5590 公开发布 https://youtu.be/5Bqk8qPrvl8 ，2:33，公开，oEmbed HTTP 200 确认） |
-| **D-09** | "how Kiro was used" 说明怎么写 | 评审 Technological Implementation 20%，官方列了可写点（specs / steering / hooks / custom agents / MCP / PBT / powers） | [1] | IN PROGRESS（英文草稿 `submission/devpost.md` 已写好，按真实使用的 spec/steering/hook/PBT/check-facts/决策记录写实；Alex 已授权表单，提交前不再逐字过审） |
+| **D-09** | "how Kiro was used" 说明怎么写 | 评审 Technological Implementation 20%，官方列了可写点（specs / steering / hooks / custom agents / MCP / PBT / powers） | [1] | CLOSED（2026-11-24 已按真实使用的 spec/steering/hook/PBT/check-facts/决策记录写实并提交；Devpost 公开页 https://devpost.com/software/fish-wish 的 "How Kiro was used" 段落已核实可见） |
 | **D-10** | 提交材料直接用英文，还是中文正文 + 英文翻译 | 规则要求所有材料英文或附全套英文翻译 | [1] | CLOSED（提交材料全英文；硬约束要求，草稿已是英文） |
 
 ## C. 已关闭 / 已确认（不重复列入待办）
@@ -54,6 +54,7 @@
 - **演示视频已获批准，YouTube 上传与表单提交已获授权**（Alex 2026-11-24；见 D-018）
 - **真机测试 Alex 确认 OK**（2026-11-24；Safari/真机不再列为 Agent 侧未测）
 - **演示视频已公开**：https://youtu.be/5Bqk8qPrvl8 （Alex 自己的 YouTube 频道 Alex Jin，2:33，公开；2026-11-24 上传并完成处理/版权检查）
+- **Devpost 已提交**（2026-11-24，Alex 授权）：公开项目页 https://devpost.com/software/fish-wish ，状态 "Project submitted!"，不再是 DRAFT；标题 Fish Wish、tagline、完整 8 段、既有作品披露、视频、live demo、GitHub 均已核实可见。提交后至 2026-12-04 14:00 PT 仍可编辑
 
 ## 来源
 

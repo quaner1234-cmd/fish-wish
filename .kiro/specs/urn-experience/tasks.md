@@ -77,7 +77,8 @@
     - 已完成：录制、剪辑、烧录英文解释字幕、结尾卡；脚本 `_scratch/video/record_final.py`、字幕文件 `_scratch/video/caps/*.txt`
     - 2026-11-24 Alex 确认"视频OK"，并授权公开上传到 YouTube（D-018）
     - 2026-11-24 已用 Alex 自己的 Google 账号（YouTube 频道 Alex Jin / @alexjin5590）公开发布：https://youtu.be/5Bqk8qPrvl8 （视频 ID `5Bqk8qPrvl8`，2:33，公开，非儿童向）；Studio 显示"标清/4K 处理已完成、版权检查无问题"，oEmbed HTTP 200 确认可公开访问。YouTube 上传任务完成
-- [~] 18. ⚑ 提交材料：公开仓库、Devpost 英文说明、how Kiro was used、既有作品披露（Q-09）；提交前按 Q-03 重核规则
+- [x] 18. ⚑ 提交材料：公开仓库、Devpost 英文说明、how Kiro was used、既有作品披露（Q-09）；提交前按 Q-03 重核规则
   - 英文材料已放 `submission/`：`devpost.md`（tagline + 8 段 + 既有作品披露 + 史实措辞）、`README.md`（索引）、`demo-video-script.md`
   - 类别 = Costume Contest；bonus 留空待 Alex（D-06/Q-06）；最终名称 = Fish Wish（Alex 2026-11-24 定，D-016）；材料全英文（D-10 CLOSED）
   - Alex 2026-11-24 授权提交表单（D-018）并确认：个人参赛（D-05）、不申报 bonus（D-06/Q-06）、符合资格（Q-01）、已登录；Q-05（Kiro 账号信息）由 Alex 自核；Q-03 规则已复核（2026-11-23）
+  - **2026-11-24 已提交**：公开项目页 https://devpost.com/software/fish-wish ，"Project submitted!"（非 DRAFT）；标题/tagline/8 段/既有作品披露/视频(l embed `5Bqk8qPrvl8`)/live demo/GitHub 均已回读核实；提交后至 2026-12-04 14:00 PT 仍可编辑
