@@ -2,7 +2,7 @@
 
 > Final title confirmed by Alex 2026-11-24; Alex authorized submitting the Devpost form.
 > Category: **Costume Contest**
-> Bonus category: **[left blank — Alex to decide]** (see `context/open-questions.md` Q-06/D-06)
+> Bonus category: **none** (Alex 2026-11-24 chose not to enter a bonus — D-06/Q-06)
 > Title: **Fish Wish** (final)
 
 ## Tagline
@@ -68,4 +68,4 @@ Historical claims follow the project's sourced fact list (`context/research-urn-
 ## Links
 - Live app: https://fish-wish.pages.dev
 - Source (public, MIT): https://github.com/quaner1234-cmd/fish-wish
-- Demo video: [to be filled after YouTube upload]
+- Demo video: https://youtu.be/5Bqk8qPrvl8 (public, 2:33, real running capture)

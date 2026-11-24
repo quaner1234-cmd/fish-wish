@@ -69,15 +69,15 @@
   - Firefox 冒烟（2026-11-23，Playwright Firefox 155，脚本 `_scratch/qa/firefox_qa.py`）：HTTP 200、标题 Fish Wish、canvas 存在、bundle `assets/index-BFGAqUZy.js` 正常加载；键盘 Enter 开始进入 dig，Skip 走到 again，结尾可见；pageerror / console.error 均为空；rAF 采样约 35 fps（headless，仅供参考，非真实 60 fps 证据）
   - Safari 由 Alex 真机覆盖（Alex 2026-11-24 确认真机 OK）；真实 60 fps 仍未由 Agent 验证
 - [x] 16. 发布：Cloudflare Pages 项目 `fish-wish`，`npm run build` 后 `npx wrangler pages deploy dist --project-name=fish-wish --branch=main`（旧项目 `urn-experience` 未删）
-- [~] 17. ⚑ 演示视频（D-08）：< 3 分钟，开头用第二幕和第五幕；先读本机共享的视频工作流说明（不在本仓库）
+- [x] 17. ⚑ 演示视频（D-08）：< 3 分钟，开头用第二幕和第五幕；先读本机共享的视频工作流说明（不在本仓库）
   - 英文分镜/字幕稿：`submission/demo-video-script.md`（7 拍，目标 ~2:20，无配音，仅字幕）
   - 真实录屏（Playwright Chromium，实跑 https://fish-wish.pages.dev/?perf）：`_scratch/video/fish-wish-demo.mp4`
     - 时长 152.57 s（2:32），1280×720，H.264，30 fps，约 11 MB；**无音轨**（Playwright 视频不采集音频，按规则"静音+烧录字幕"合规；作品自带声音可由 Alex 录屏时另采）
     - 流程：开头用作品自身标题页（Fish Wish / Begin）→ 第一幕 → 第二幕（脸+字幕）→ 第三幕孔 → 第四幕上升（瓮中光的孩子）→ 第五幕（光鱼+末句）→ 结尾卡（The people are imagined. The basin is real.）→ 4.5 s 结尾字幕卡
     - 已完成：录制、剪辑、烧录英文解释字幕、结尾卡；脚本 `_scratch/video/record_final.py`、字幕文件 `_scratch/video/caps/*.txt`
     - 2026-11-24 Alex 确认"视频OK"，并授权公开上传到 YouTube（D-018）
-    - 未完成：实际上传并回填公开链接
+    - 2026-11-24 已用 Alex 自己的 Google 账号（YouTube 频道 Alex Jin / @alexjin5590）公开发布：https://youtu.be/5Bqk8qPrvl8 （视频 ID `5Bqk8qPrvl8`，2:33，公开，非儿童向）；Studio 显示"标清/4K 处理已完成、版权检查无问题"，oEmbed HTTP 200 确认可公开访问。YouTube 上传任务完成
 - [~] 18. ⚑ 提交材料：公开仓库、Devpost 英文说明、how Kiro was used、既有作品披露（Q-09）；提交前按 Q-03 重核规则
   - 英文材料已放 `submission/`：`devpost.md`（tagline + 8 段 + 既有作品披露 + 史实措辞）、`README.md`（索引）、`demo-video-script.md`
   - 类别 = Costume Contest；bonus 留空待 Alex（D-06/Q-06）；最终名称 = Fish Wish（Alex 2026-11-24 定，D-016）；材料全英文（D-10 CLOSED）
-  - Alex 2026-11-24 授权提交表单（D-018）；提交前仍需 Alex 指定 D-05（个人/组队）、D-06（bonus）、Q-01（资格）、Q-05（Kiro 账号信息）——不得代填；Q-03 规则已复核（2026-11-23）
+  - Alex 2026-11-24 授权提交表单（D-018）并确认：个人参赛（D-05）、不申报 bonus（D-06/Q-06）、符合资格（Q-01）、已登录；Q-05（Kiro 账号信息）由 Alex 自核；Q-03 规则已复核（2026-11-23）

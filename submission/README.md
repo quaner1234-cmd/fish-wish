@@ -12,7 +12,8 @@ English materials for the Kiroween 2026 Devpost submission. Final title **Fish W
 - Materials in English.
 - Demo video: under 3 minutes, public on YouTube, real running app, no unauthorized music.
 
-## Left for Alex to decide (not decided here)
-- Bonus category (form field) — see `context/open-questions.md` Q-06 / D-06. **Must be specified before form submission.**
-- Individual vs. team entry (D-05). **Must be specified before form submission.**
-- Eligibility / region (Q-01) and Kiro account details (Q-05) — Alex's own to confirm.
+## Submission form values (Alex 2026-11-24)
+- Category: **Costume Contest**
+- Bonus category: **none** (Alex chose not to enter any bonus — D-06/Q-06)
+- Entry type: **individual** (D-05)
+- Eligibility: Alex confirmed eligible (Q-01). Kiro account/credits are Alex's own to verify (Q-05).
